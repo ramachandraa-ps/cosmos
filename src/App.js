@@ -1,8 +1,11 @@
 import React, { Suspense, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars, OrbitControls, useGLTF } from "@react-three/drei";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import ChatBot from './components/ChatBot';
+import SpaceMonitor from './components/SpaceMonitor';
+import DeepSpace from './components/DeepSpace';
 
 function AstronautModel() {
   const astronautRef = useRef();
@@ -43,77 +46,84 @@ function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
-    <div className="app-container">
-      <nav className="navbar">
-        <div className="nav-logo">COSMOS</div>
-        <div className="nav-links">
-          <a href="#home">Home</a>
-          <a href="#space-monitor">Space Monitor</a>
-          <a href="#deep-space">Deep Space</a>
-          <a href="#tech-hub">Tech Hub</a>
-          <a href="#interaction-zone">Interaction Zone</a>
-        </div>
-      </nav>
-
-      <main className="hero-section">
-        <div className="hero-content">
-          <div className="subtitle">Welcome to the future</div>
-          <h1>Explore The Cosmos</h1>
-          <p>Embark on an extraordinary journey through the infinite expanse of space. 
-             Discover mysterious nebulae, traverse distant galaxies, and unlock the 
-             secrets of the universe. Your cosmic adventure begins here.</p>
-          <div className="hero-buttons">
-            <button className="explore-btn">
-              Begin Journey
-            </button>
-            <button 
-              className="chatbot-btn"
-              onClick={() => setIsChatOpen(!isChatOpen)}
-            >
-              {isChatOpen ? 'Close AI Assistant' : 'Ask AI Assistant'} 
-            </button>
+    <Router>
+      <div className="app-container">
+        <nav className="navbar">
+          <div className="nav-logo">COSMOS</div>
+          <div className="nav-links">
+            <Link to="/">Home</Link>
+            <Link to="/space-monitor">Space Monitor</Link>
+            <Link to="/deep-space">Deep Space</Link>
+            <a href="#tech-hub">Tech Hub</a>
+            <a href="#interaction-zone">Interaction Zone</a>
           </div>
-        </div>
-        
-        <div className="canvas-container">
-          <Canvas camera={{ position: [0, 0, 12], fov: 50 }}> {/* Adjusted camera for larger model */}
-            <Suspense fallback={null}>
-              <ambientLight intensity={1.5} /> {/* Increased light intensity */}
-              <pointLight position={[10, 10, 10]} intensity={2.5} />
-              <spotLight
-                position={[0, 5, 8]}
-                angle={0.6}
-                penumbra={0.8}
-                intensity={2}
-                castShadow
-              />
-              <Stars 
-                radius={300} 
-                depth={50} 
-                count={4000}
-                factor={4} 
-                saturation={0.5} 
-                fade 
-                speed={1}
-              />
-              <AstronautModel />
-              <OrbitControls 
-                enableZoom={false} 
-                autoRotate={false}
-                enablePan={false}
-                maxPolarAngle={Math.PI * 0.6}
-                minPolarAngle={Math.PI * 0.4}
-                enableRotate={false}
-              />
-            </Suspense>
-          </Canvas>
-        </div>
-        
-      </main>
+        </nav>
 
-      {/* ChatBot Components */}
-      <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-    </div>
+        <Routes>
+          <Route path="/space-monitor" element={<SpaceMonitor />} />
+          <Route path="/deep-space" element={<DeepSpace />} />
+          <Route path="/" element={
+            <main className="hero-section">
+              <div className="hero-content">
+                <div className="subtitle">Welcome to the future</div>
+                <h1>Explore The Cosmos</h1>
+                <p>Embark on an extraordinary journey through the infinite expanse of space. 
+                   Discover mysterious nebulae, traverse distant galaxies, and unlock the 
+                   secrets of the universe. Your cosmic adventure begins here.</p>
+                <div className="hero-buttons">
+                  <button className="explore-btn">
+                    Begin Journey
+                  </button>
+                  <button 
+                    className="chatbot-btn"
+                    onClick={() => setIsChatOpen(!isChatOpen)}
+                  >
+                    {isChatOpen ? 'Close AI Assistant' : 'Ask AI Assistant'} 
+                  </button>
+                </div>
+              </div>
+              
+              <div className="canvas-container">
+                <Canvas camera={{ position: [0, 0, 12], fov: 50 }}>
+                  <Suspense fallback={null}>
+                    <ambientLight intensity={1.5} />
+                    <pointLight position={[10, 10, 10]} intensity={2.5} />
+                    <spotLight
+                      position={[0, 5, 8]}
+                      angle={0.6}
+                      penumbra={0.8}
+                      intensity={2}
+                      castShadow
+                    />
+                    <Stars 
+                      radius={300} 
+                      depth={50} 
+                      count={4000}
+                      factor={4} 
+                      saturation={0.5} 
+                      fade 
+                      speed={1}
+                    />
+                    <AstronautModel />
+                    <OrbitControls 
+                      enableZoom={false} 
+                      autoRotate={false}
+                      enablePan={false}
+                      maxPolarAngle={Math.PI * 0.6}
+                      minPolarAngle={Math.PI * 0.4}
+                      enableRotate={false}
+                    />
+                  </Suspense>
+                </Canvas>
+              </div>
+            </main>
+          } />
+        </Routes>
+
+        {/* ChatBot Components */}
+        <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      </div>
+    </Router>
   );
 }
 
