@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const SpaceMonitorContainer = styled.div`
-  background: linear-gradient(to bottom, #0a192f, #000000);
+  background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
   min-height: 100vh;
   color: #ffffff;
   padding: 6rem 2rem 2rem 2rem;
@@ -12,18 +12,17 @@ const Title = styled.h1`
   font-size: 2.8rem;
   text-align: center;
   margin-bottom: 1rem;
-  color: #5ce1e6;
-  text-shadow: 0 0 10px rgba(92, 225, 230, 0.5),
-               0 0 20px rgba(92, 225, 230, 0.3),
-               0 0 30px rgba(92, 225, 230, 0.2);
-  font-family: 'Space Mono', monospace;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif;
   text-transform: uppercase;
   letter-spacing: 2px;
 `;
 
 const Subtitle = styled.p`
   text-align: center;
-  color: #8892b0;
+  color: #ffffff;
   font-size: 1.1rem;
   margin-bottom: 3rem;
   opacity: 0.8;
@@ -37,54 +36,59 @@ const FeaturesGrid = styled.div`
 `;
 
 const FeatureCard = styled.div`
-  background: rgba(10, 25, 47, 0.9);
   background: linear-gradient(
-    145deg,
-    rgba(10, 25, 47, 0.9) 0%,
-    rgba(10, 25, 47, 0.7) 100%
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
   );
-  border-radius: 15px;
+  border-radius: 40px;
   padding: 2rem;
   position: relative;
   transition: all 0.3s ease-in-out;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
 
   &:hover {
     transform: translateY(-10px);
-    box-shadow: 0 15px 40px 0 rgba(0, 0, 0, 0.4);
-    border-color: rgba(100, 255, 218, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
   h3 {
-    color: #5ce1e6;
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin-bottom: 1rem;
   }
 
   p {
-    color: #8892b0;
+    color: #ffffff;
     line-height: 1.6;
     font-size: 1.1rem;
   }
 `;
 
 const DataLegend = styled.div`
-  background: rgba(10, 25, 47, 0.9);
   background: linear-gradient(
-    145deg,
-    rgba(10, 25, 47, 0.9) 0%,
-    rgba(10, 25, 47, 0.7) 100%
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
   );
-  border-radius: 15px;
+  border-radius: 40px;
   padding: 2rem;
   margin-bottom: 2rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
 
   h3 {
-    color: #5ce1e6;
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 1.4rem;
     margin-bottom: 1.5rem;
   }
@@ -93,35 +97,30 @@ const DataLegend = styled.div`
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
-    color: #8892b0;
+    color: #ffffff;
     font-size: 1.1rem;
-  }
-
-  .hazard-dot {
-    width: 12px;
-    height: 12px;
-    background: linear-gradient(90deg, #ff4757, #ff6b81);
-    border-radius: 50%;
-    margin-right: 0.8rem;
   }
 `;
 
 const DateRangeContainer = styled.div`
-  background: rgba(10, 25, 47, 0.9);
   background: linear-gradient(
-    145deg,
-    rgba(10, 25, 47, 0.9) 0%,
-    rgba(10, 25, 47, 0.7) 100%
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
   );
-  border-radius: 15px;
+  border-radius: 40px;
   padding: 2rem;
   margin-bottom: 2rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
 
   h3 {
-    color: #5ce1e6;
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 1.4rem;
     margin-bottom: 1.5rem;
   }
@@ -132,8 +131,8 @@ const DateRangeContainer = styled.div`
   }
 
   input {
-    background: rgba(10, 25, 47, 0.7);
-    border: 1px solid rgba(100, 255, 218, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     padding: 0.8rem 1.2rem;
     color: #ffffff;
@@ -142,8 +141,8 @@ const DateRangeContainer = styled.div`
     flex: 1;
 
     &:hover, &:focus {
-      border-color: rgba(100, 255, 218, 0.6);
-      box-shadow: 0 0 15px rgba(100, 255, 218, 0.1);
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
       outline: none;
     }
   }
@@ -156,20 +155,30 @@ const AsteroidsGrid = styled.div`
 `;
 
 const AsteroidCard = styled.div`
-  background: rgba(10, 25, 47, 0.7);
-  border-radius: 10px;
-  padding: 1.5rem;
-  border: 1px solid ${props => props.isHazardous ? 'rgba(255, 71, 87, 0.3)' : 'rgba(100, 255, 218, 0.1)'};
-  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border-radius: 40px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
 
   h3 {
-    color: #64ffda;
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin-bottom: 1rem;
   }
 
   .data-row {
     margin-bottom: 0.8rem;
-    color: #8892b0;
+    color: #ffffff;
   }
 
   .hazard-tag {
@@ -183,7 +192,7 @@ const AsteroidCard = styled.div`
   }
 
   .more-details {
-    color: #64ffda;
+    color: #00ffff;
     text-decoration: none;
     display: inline-block;
     margin-top: 1rem;

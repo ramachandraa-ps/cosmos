@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const DeepSpaceContainer = styled.div`
-  background: linear-gradient(to bottom, #0a192f, #000000);
+  background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
   min-height: 100vh;
   color: #ffffff;
   padding: 6rem 2rem 2rem 2rem;
@@ -11,11 +11,10 @@ const DeepSpaceContainer = styled.div`
 const Title = styled.h1`
   font-size: 3rem;
   text-align: center;
-  color: #5ce1e6;
-  text-shadow: 0 0 10px rgba(92, 225, 230, 0.5),
-               0 0 20px rgba(92, 225, 230, 0.3),
-               0 0 30px rgba(92, 225, 230, 0.2);
-  font-family: 'Space Mono', monospace;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif;
   text-transform: uppercase;
   letter-spacing: 2px;
   margin-bottom: 1rem;
@@ -23,7 +22,7 @@ const Title = styled.h1`
 
 const Subtitle = styled.p`
   text-align: center;
-  color: #8892b0;
+  color: #ffffff;
   font-size: 1.2rem;
   margin-bottom: 3rem;
   max-width: 800px;
@@ -32,24 +31,27 @@ const Subtitle = styled.p`
 `;
 
 const InfoSection = styled.div`
-  background: rgba(10, 25, 47, 0.9);
   background: linear-gradient(
-    145deg,
-    rgba(10, 25, 47, 0.9) 0%,
-    rgba(10, 25, 47, 0.7) 100%
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
   );
-  border-radius: 15px;
+  border-radius: 40px;
   padding: 2rem;
   margin-bottom: 3rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 
   h2 {
-    color: #64ffda;
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     position: relative;
@@ -62,13 +64,13 @@ const InfoSection = styled.div`
       left: 0;
       width: 100px;
       height: 2px;
-      background: #64ffda;
+      background: linear-gradient(45deg, #00ffff, #ff00ff);
       opacity: 0.5;
     }
   }
 
   p {
-    color: #8892b0;
+    color: #ffffff;
     line-height: 1.8;
     font-size: 1.1rem;
     margin-bottom: 1.5rem;
@@ -83,22 +85,23 @@ const ImageGrid = styled.div`
 `;
 
 const ImageCard = styled.div`
-  background: rgba(10, 25, 47, 0.9);
   background: linear-gradient(
-    145deg,
-    rgba(10, 25, 47, 0.9) 0%,
-    rgba(10, 25, 47, 0.7) 100%
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
   );
-  border-radius: 15px;
+  border-radius: 40px;
   overflow: hidden;
   transition: all 0.3s ease-in-out;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
 
   &:hover {
     transform: translateY(-10px);
-    box-shadow: 0 15px 40px 0 rgba(0, 0, 0, 0.4);
-    border-color: rgba(100, 255, 218, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
   .image-container {
@@ -148,13 +151,19 @@ const ImageCard = styled.div`
 `;
 
 const DateSelector = styled.div`
-  background: rgba(10, 25, 47, 0.9);
-  border-radius: 15px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border-radius: 40px;
   padding: 2rem;
   margin-bottom: 2rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
   text-align: center;
 
   input {
