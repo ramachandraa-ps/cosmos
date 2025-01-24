@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
 const generatePrompt = (currentDate) => {
-  const month = currentDate.getMonth() + 1;
+  const month = currentDate.getMonth() + 1; // JavaScript months are 0-based
   const day = currentDate.getDate();
 
   return `Find significant space history events that occurred on ${month}/${day} (any year). 
@@ -19,8 +19,15 @@ const generatePrompt = (currentDate) => {
   Important:
   1. Only include major space events (launches, discoveries, missions, achievements)
   2. Return 2-3 most significant events
-  3. Ensure dates are accurate
+  3. Ensure dates are accurate and match exactly ${month}/${day} (any year)
   4. Sort by historical significance`;
+};
+
+const isSameMonthAndDay = (date1, date2) => {
+  return (
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
 };
 
 export const fetchHistoricEvents = async () => {
@@ -63,7 +70,14 @@ export const fetchHistoricEvents = async () => {
 
     const text = data.candidates[0].content.parts[0].text;
     const jsonStr = text.replace(/```json|```|\n/g, '').trim();
-    const events = JSON.parse(jsonStr);
+    let events = JSON.parse(jsonStr);
+
+    // Filter events to ensure they match today's month and day
+    const today = new Date();
+    events = events.filter(event => {
+      const eventDate = new Date(event.date);
+      return isSameMonthAndDay(eventDate, today);
+    });
 
     return Array.isArray(events) ? events : [];
 
@@ -86,6 +100,17 @@ export const useHistoricEvents = () => {
     };
 
     loadEvents();
+
+    // Refresh events at midnight
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const timeUntilMidnight = tomorrow - now;
+
+    const midnightTimer = setTimeout(() => {
+      loadEvents();
+    }, timeUntilMidnight);
+
+    return () => clearTimeout(midnightTimer);
   }, []);
 
   return { events, loading };
