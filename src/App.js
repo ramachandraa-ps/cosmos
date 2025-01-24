@@ -11,6 +11,7 @@ import InteractionZone from './components/InteractionZone';
 import CelestialChallenge from './components/CelestialChallenge';
 import CategoryPage from './components/categories/CategoryPage';
 
+
 function AstronautModel() {
   const astronautRef = useRef();
   const { scene } = useGLTF("/astronaut_3d/scene.gltf");
@@ -70,6 +71,7 @@ function App() {
           <Route path="/interaction" element={<InteractionZone />} />
           <Route path="/celestial-challenge" element={<CelestialChallenge />} />
           <Route path="/tech-hub/:category" element={<CategoryPage />} />
+          <Route path="/webinars" element={<Webinars />} />
           <Route path="/" element={
             <main className="hero-section">
               <div className="hero-content">
