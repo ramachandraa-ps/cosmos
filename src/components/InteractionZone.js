@@ -96,7 +96,7 @@ const InteractionZone = () => {
   const features = [
     {
       title: 'Cosmic Architect',
-      image: '/interaction/cosmic_architect.jpg',
+      image: '/interaction/cosmic_architect.jpeg',
       description: 'Design and simulate your own space ecosystems',
       path: '/cosmic-architect'
     },

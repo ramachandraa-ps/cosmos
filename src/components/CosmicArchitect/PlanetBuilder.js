@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls } from '@react-three/drei';
+import cosmicArchitectImage from '../../assets/cosmic_architect.jpeg';
 
 const Container = styled.div`
   position: fixed;
@@ -123,18 +124,89 @@ const Select = styled.select`
 `;
 
 const Button = styled.button`
-  background: linear-gradient(45deg, #00aeff, #a6ff00);
+  background: ${props => props.disabled ? 
+    'rgba(128, 128, 128, 0.3)' : 
+    'linear-gradient(45deg, #00aeff, #a6ff00)'};
+  color: white;
+  padding: 12px 24px;
   border: none;
-  border-radius: 5px;
-  padding: 0.8rem;
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.3s ease;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  opacity: ${props => props.disabled ? 0.5 : 1};
 
   &:hover {
-    transform: translateY(-2px);
+    transform: ${props => props.disabled ? 'none' : 'translateY(-2px)'};
+    box-shadow: ${props => props.disabled ? 'none' : '0 5px 15px rgba(166, 255, 0, 0.2)'};
   }
+`;
+
+const CongratsOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.5s ease;
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+`;
+
+const CongratsCard = styled.div`
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 600px;
+  border: 1px solid rgba(166, 255, 0, 0.2);
+  text-align: center;
+  animation: slideUp 0.5s ease;
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  h2 {
+    background: linear-gradient(45deg, #00aeff, #a6ff00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: white;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+`;
+
+const CardImage = styled.img`
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 1.5rem;
+`;
+
+const CloseButton = styled(Button)`
+  background: linear-gradient(45deg, #ff4b4b, #ff8f00);
+  padding: 8px 16px;
+  font-size: 0.9rem;
 `;
 
 const Layout = styled.div`
@@ -174,20 +246,40 @@ const PlanetBuilder = () => {
     water: '70',
     land: '30'
   });
+  
+  const [showCongrats, setShowCongrats] = useState(false);
 
   const handleChange = (e) => {
     const value = e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
     setPlanetData(prev => ({
       ...prev,
       [e.target.name]: value,
-      // Ensure water and land percentages sum to 100%
       ...(e.target.name === 'water' ? { land: (100 - value).toString() } : {}),
       ...(e.target.name === 'land' ? { water: (100 - value).toString() } : {})
     }));
   };
 
+  const getAtmosphereDescription = (type) => {
+    switch(type) {
+      case 'none': return 'no atmosphere';
+      case 'thin': return 'a thin atmosphere';
+      case 'thick': return 'a thick atmosphere';
+      default: return 'an Earth-like atmosphere';
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setShowCongrats(true);
+  };
+
+  const getTemperatureDescription = (temp) => {
+    const t = parseFloat(temp);
+    if (t < 0) return 'freezing';
+    if (t < 15) return 'cold';
+    if (t < 30) return 'moderate';
+    if (t < 50) return 'hot';
+    return 'extremely hot';
   };
 
   return (
@@ -205,9 +297,9 @@ const PlanetBuilder = () => {
           />
           <OrbitControls 
             enableZoom={false}
-            minPolarAngle={Math.PI / 4} 
+            minPolarAngle={Math.PI / 4}
             maxPolarAngle={Math.PI * 3/4}
-            minAzimuthAngle={-Math.PI / 4} 
+            minAzimuthAngle={-Math.PI / 4}
             maxAzimuthAngle={Math.PI / 4}
           />
         </Canvas>
@@ -311,9 +403,32 @@ const PlanetBuilder = () => {
             />
           </FormGroup>
 
-          <Button type="submit">Create Planet</Button>
+          <Button type="submit" disabled={!planetData.name.trim()}>
+            Create Planet
+          </Button>
         </Form>
       </Container>
+
+      {showCongrats && (
+        <CongratsOverlay>
+          <CongratsCard>
+            <CardImage 
+              src={cosmicArchitectImage}
+              alt="Cosmic Architect"
+            />
+            <h2>Congratulations! 🎉</h2>
+            <p>
+              You've successfully created {planetData.name}! 
+              This {getTemperatureDescription(planetData.temperature)} planet has {getAtmosphereDescription(planetData.atmosphere)}, 
+              with {planetData.water}% water coverage and {planetData.land}% land mass.
+              Its size is {planetData.size}x Earth's size.
+            </p>
+            <CloseButton onClick={() => setShowCongrats(false)}>
+              Close
+            </CloseButton>
+          </CongratsCard>
+        </CongratsOverlay>
+      )}
     </Layout>
   );
 };
