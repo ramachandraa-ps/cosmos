@@ -12,7 +12,8 @@ import CelestialChallenge from './components/CelestialChallenge';
 import Webinars from './components/Webinars';
 import QuizTime from './components/QuizTime';
 import CategoryPage from './components/categories/CategoryPage';
-
+import NotificationBell from './components/notifications/NotificationBell';
+import { useHistoricEvents } from './services/notificationService';
 
 function AstronautModel() {
   const astronautRef = useRef();
@@ -51,6 +52,7 @@ function AstronautModel() {
 
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const { events, loading } = useHistoricEvents();
 
   return (
     <Router>
@@ -58,11 +60,17 @@ function App() {
         <nav className="navbar">
           <div className="nav-logo">COSMOS</div>
           <div className="nav-links">
-          <Link to="/" className="nav-link">Home</Link>
+            <Link to="/" className="nav-link">Home</Link>
             <Link to="/space-monitor" className="nav-link">Space Monitor</Link>
             <Link to="/deep-space" className="nav-link">Deep Space</Link>
             <Link to="/interaction" className="nav-link">Interaction Zone</Link>
-            <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
+              <NotificationBell 
+                hasNotifications={!loading && events.length > 0} 
+                notifications={events}
+              />
+            </div>
           </div>
         </nav>
 
