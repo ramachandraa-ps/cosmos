@@ -9,6 +9,7 @@ import DeepSpace from './components/DeepSpace';
 import TechHub from './components/TechHub';
 import InteractionZone from './components/InteractionZone';
 import CelestialChallenge from './components/CelestialChallenge';
+import Webinars from './components/Webinars';
 import CategoryPage from './components/categories/CategoryPage';
 
 
