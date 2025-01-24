@@ -32,48 +32,62 @@ const Subtitle = styled.p`
   margin-right: auto;
 `;
 
-const GamesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+const CardsContainer = styled.div`
+  display: flex;
+  justify-content: center;
   gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
-const GameCard = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+const Card = styled.div`
+  width: 300px;
+  height: 400px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border-radius: 20px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
   }
 `;
 
-const GameImage = styled.img`
+const CardImage = styled.img`
   width: 100%;
-  height: 200px;
+  height: 70%;
   object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 1rem;
 `;
 
-const GameTitle = styled.h3`
+const CardTitle = styled.h3`
+  color: white;
+  text-align: center;
+  margin: 1rem 0;
   font-size: 1.5rem;
-  color: #00ffff;
-  margin-bottom: 1rem;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 1px;
 `;
 
-const GameDescription = styled.p`
-  color: #ffffff;
-  opacity: 0.8;
-  line-height: 1.6;
+const CardDescription = styled.p`
+  color: #ddd;
+  text-align: center;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  opacity: 0.9;
 `;
 
 const Games = () => {
@@ -82,7 +96,7 @@ const Games = () => {
   const gamesList = [
     {
       title: 'Constellation Connect',
-      image: '/games/constellation-connect.jpg',
+      image: '/interaction/Constellation.jpg',
       description: 'Connect the stars to form constellations while learning about their mythology and stories. Perfect for aspiring astronomers!',
       path: '/games/constellation-connect'
     },
@@ -95,15 +109,15 @@ const Games = () => {
       <Subtitle>
         Embark on an educational journey through space with our collection of interactive games
       </Subtitle>
-      <GamesGrid>
+      <CardsContainer>
         {gamesList.map((game, index) => (
-          <GameCard key={index} onClick={() => navigate(game.path)}>
-            <GameImage src={game.image} alt={game.title} />
-            <GameTitle>{game.title}</GameTitle>
-            <GameDescription>{game.description}</GameDescription>
-          </GameCard>
+          <Card key={index} onClick={() => navigate(game.path)}>
+            <CardImage src={game.image} alt={game.title} />
+            <CardTitle>{game.title}</CardTitle>
+            <CardDescription>{game.description}</CardDescription>
+          </Card>
         ))}
-      </GamesGrid>
+      </CardsContainer>
     </GamesContainer>
   );
 };

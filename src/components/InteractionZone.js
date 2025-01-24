@@ -102,7 +102,7 @@ const InteractionZone = () => {
     },
     {
       title: 'Games',
-      image: '/interaction/games.jpg',
+      image: '/interaction/Game.jpg',
       description: 'Play educational space games and learn about constellations',
       path: '/games'
     },
