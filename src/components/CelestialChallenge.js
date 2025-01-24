@@ -48,31 +48,34 @@ const InstructionText = styled.p`
 `;
 
 const PlanetPalette = styled.div`
-  width: 500px;
+  width: 300px;
   min-height: 100vh;
-  padding: 30px;
+  padding: 20px;
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  gap: 15px;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
   overflow-y: auto;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const PlanetsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  width: 100%;
+  padding: 10px;
+  justify-items: center;
+  align-content: start;
+  flex: 1;
 `;
 
 const PlanetCard = styled.div`
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  padding: 12px;
-  margin: 5px;
+  padding: 15px;
   cursor: move;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
@@ -81,6 +84,7 @@ const PlanetCard = styled.div`
   flex-direction: column;
   align-items: center;
   width: 120px;
+  height: 160px;
 
   &:hover {
     transform: translateY(-2px);
@@ -137,11 +141,14 @@ const ResetButton = styled.button`
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 20px;
+  padding: 12px 25px;
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 20px;
+  width: 200px;
+  font-size: 1.1em;
+  margin-top: auto;
+  margin-bottom: 20px;
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
@@ -432,19 +439,43 @@ const CelestialChallenge = () => {
   const handleDrop = (e, slotIndex) => {
     e.preventDefault();
     const planet = JSON.parse(e.dataTransfer.getData('planet'));
+    const correctOrder = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
     
+    // Check if slot already has a planet
+    if (planetOrder[slotIndex] !== null) {
+      setFeedback("This slot is already occupied!");
+      setShowFeedback(true);
+      setTimeout(() => setShowFeedback(false), 2000);
+      return;
+    }
+
+    // Update planet order
     const newOrder = [...planetOrder];
     newOrder[slotIndex] = planet;
     setPlanetOrder(newOrder);
     
+    // Remove planet from available planets
     setAvailablePlanets(prev => prev.filter(p => p.name !== planet.name));
+
+    // Check if placement is correct
+    const isCorrectPlacement = planet.name === correctOrder[slotIndex];
     
-    const correctOrder = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
-    const isCorrect = newOrder.every((p, i) => p?.name === correctOrder[i]);
-    
-    if (isCorrect) {
-      setScore(prev => prev + 100);
-      setFeedback("Perfect! You've arranged the planets in the correct order!");
+    // Update score and feedback
+    if (isCorrectPlacement) {
+      setScore(prev => prev + 10);
+      setFeedback(`Correct! ${planet.name} is in the right position!`);
+    } else {
+      setScore(prev => Math.max(0, prev - 5));
+      setFeedback(`Try again! That's not where ${planet.name} belongs.`);
+    }
+    setShowFeedback(true);
+    setTimeout(() => setShowFeedback(false), 2000);
+
+    // Check if all planets are placed correctly
+    const allCorrect = newOrder.every((p, i) => p?.name === correctOrder[i]);
+    if (allCorrect) {
+      setScore(prev => prev + 50); // Bonus for completing
+      setFeedback("Perfect! You've arranged all planets in the correct order!");
       setShowFeedback(true);
     }
   };
@@ -452,7 +483,9 @@ const CelestialChallenge = () => {
   const handleReset = () => {
     setPlanetOrder(Array(8).fill(null));
     setAvailablePlanets([...planetData].sort(() => Math.random() - 0.5));
+    setScore(0);
     setShowFeedback(false);
+    setFeedback('');
   };
 
   return (
