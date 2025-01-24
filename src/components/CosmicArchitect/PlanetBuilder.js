@@ -17,8 +17,7 @@ const Container = styled.div`
   padding: 1.5rem;
   border: 1px solid rgba(166, 255, 0, 0.1);
   color: white;
-  z-index: 1000;
-
+  z-index: 3; 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
     width: 8px;
@@ -144,15 +143,17 @@ const Layout = styled.div`
   width: 100%;
   height: 100vh;
   position: relative;
+  z-index: 1; 
 `;
 
 const PreviewContainer = styled.div`
-  position: absolute;
-  left: 280px; 
+  position: fixed;
+  left: 50%;
   top: 50%;
-  transform: translateY(-50%);
-  width: 500px; 
+  transform: translate(-50%, -50%);
+  width: 500px;
   height: 400px;
+  margin-left: -25px; 
   background: rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   backdrop-filter: blur(10px);
@@ -160,6 +161,7 @@ const PreviewContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 0 20px rgba(166, 255, 0, 0.1);
   clip-path: inset(0 0 0 0 round 20px);
+  z-index: 2; 
 `;
 
 const PlanetBuilder = () => {
