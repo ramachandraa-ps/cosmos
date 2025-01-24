@@ -4,8 +4,6 @@ import { Canvas } from '@react-three/fiber';
 import { Stars, OrbitControls } from '@react-three/drei';
 import PlanetBuilder from './PlanetBuilder';
 import SolarSystemDesigner from './SolarSystemDesigner';
-import HabitabilityAnalyzer from './HabitabilityAnalyzer';
-import TimeLapse from './TimeLapse';
 
 const pulseAnimation = keyframes`
   0% { transform: scale(1); }
@@ -175,7 +173,7 @@ const ContentOverlay = styled.div`
 `;
 
 function CosmicArchitect() {
-  const [activeView, setActiveView] = useState('overview');
+  const [activeView, setActiveView] = useState('planetBuilder');
   const [planetData, setPlanetData] = useState(null);
   const [solarSystemData, setSolarSystemData] = useState([]);
 
@@ -193,54 +191,33 @@ function CosmicArchitect() {
       name: 'Solar System Designer',
       description: 'Design complete solar systems',
       section: 'creation'
-    },
-    {
-      id: 'habitability',
-      icon: '🌱',
-      name: 'Habitability Analyzer',
-      description: 'Analyze life-sustaining potential',
-      section: 'analysis'
-    },
-    {
-      id: 'timeline',
-      icon: '⏳',
-      name: 'Time-Lapse Mode',
-      description: 'Watch your system evolve',
-      section: 'simulation'
     }
   ];
 
-  const renderActiveComponent = () => {
-    switch (activeView) {
+  const renderActiveView = () => {
+    switch(activeView) {
       case 'planetBuilder':
-        return <PlanetBuilder onPlanetCreate={setPlanetData} />;
+        return <PlanetBuilder />;
       case 'solarSystem':
-        return <SolarSystemDesigner onSystemUpdate={setSolarSystemData} />;
-      case 'habitability':
-        return <HabitabilityAnalyzer planetData={planetData} />;
-      case 'timeline':
-        return <TimeLapse solarSystem={solarSystemData} />;
+        return <SolarSystemDesigner />;
       default:
-        return null;
+        return <PlanetBuilder />;
     }
   };
 
   return (
     <Container>
       <CanvasContainer>
-        <Canvas camera={{ position: [0, 0, 50], fov: 50 }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
+        <Canvas>
           <Stars 
             radius={300} 
             depth={50} 
-            count={5000}
+            count={5000} 
             factor={4} 
             saturation={0.5} 
-            fade 
-            speed={1}
+            fade
           />
-          <OrbitControls />
+          <OrbitControls enableZoom={false} />
         </Canvas>
       </CanvasContainer>
 
@@ -248,71 +225,31 @@ function CosmicArchitect() {
         <Header>
           <Title>Cosmic Architect</Title>
           <Description>
-            Design and simulate entire space ecosystems. Create planets, design solar systems,
-            and analyze their potential for sustaining life.
+            Design and simulate celestial bodies and entire solar systems.
+            Explore the possibilities of planetary formation and cosmic evolution.
           </Description>
         </Header>
 
         <ControlPanel>
           <ToolSection>
             <SectionTitle>Creation Tools</SectionTitle>
-            {tools
-              .filter(tool => tool.section === 'creation')
-              .map(tool => (
-                <ToolButton
-                  key={tool.id}
-                  active={activeView === tool.id}
-                  onClick={() => setActiveView(tool.id)}
-                >
-                  <ToolIcon>{tool.icon}</ToolIcon>
-                  <ToolInfo>
-                    <ToolName>{tool.name}</ToolName>
-                    <ToolDescription>{tool.description}</ToolDescription>
-                  </ToolInfo>
-                </ToolButton>
-              ))}
-          </ToolSection>
-
-          <ToolSection>
-            <SectionTitle>Analysis Tools</SectionTitle>
-            {tools
-              .filter(tool => tool.section === 'analysis')
-              .map(tool => (
-                <ToolButton
-                  key={tool.id}
-                  active={activeView === tool.id}
-                  onClick={() => setActiveView(tool.id)}
-                >
-                  <ToolIcon>{tool.icon}</ToolIcon>
-                  <ToolInfo>
-                    <ToolName>{tool.name}</ToolName>
-                    <ToolDescription>{tool.description}</ToolDescription>
-                  </ToolInfo>
-                </ToolButton>
-              ))}
-          </ToolSection>
-
-          <ToolSection>
-            <SectionTitle>Simulation Tools</SectionTitle>
-            {tools
-              .filter(tool => tool.section === 'simulation')
-              .map(tool => (
-                <ToolButton
-                  key={tool.id}
-                  active={activeView === tool.id}
-                  onClick={() => setActiveView(tool.id)}
-                >
-                  <ToolIcon>{tool.icon}</ToolIcon>
-                  <ToolInfo>
-                    <ToolName>{tool.name}</ToolName>
-                    <ToolDescription>{tool.description}</ToolDescription>
-                  </ToolInfo>
-                </ToolButton>
-              ))}
+            {tools.map(tool => (
+              <ToolButton
+                key={tool.id}
+                active={activeView === tool.id}
+                onClick={() => setActiveView(tool.id)}
+              >
+                <ToolIcon>{tool.icon}</ToolIcon>
+                <ToolInfo>
+                  <ToolName>{tool.name}</ToolName>
+                  <ToolDescription>{tool.description}</ToolDescription>
+                </ToolInfo>
+              </ToolButton>
+            ))}
           </ToolSection>
         </ControlPanel>
 
-        {renderActiveComponent()}
+        {renderActiveView()}
       </ContentOverlay>
     </Container>
   );

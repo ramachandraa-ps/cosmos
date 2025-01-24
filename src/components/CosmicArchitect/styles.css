@@ -1,0 +1,47 @@
+.congrats-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.congrats-card {
+  background: rgba(15, 15, 25, 0.95);
+  border: 1px solid rgba(166, 255, 0, 0.3);
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+  max-width: 400px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.congrats-card h2 {
+  background: linear-gradient(45deg, #00aeff, #a6ff00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+}
+
+.congrats-card p {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

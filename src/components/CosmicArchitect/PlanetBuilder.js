@@ -215,7 +215,35 @@ const Layout = styled.div`
   width: 100%;
   height: 100vh;
   position: relative;
-  z-index: 1; 
+  z-index: 1;
+`;
+
+const CreationOptions = styled.div`
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 3;
+`;
+
+const OptionButton = styled.button`
+  background: ${props => props.active ? 
+    'linear-gradient(45deg, #00aeff, #a6ff00)' : 
+    'rgba(15, 15, 25, 0.95)'};
+  color: white;
+  padding: 12px 24px;
+  border: 1px solid rgba(166, 255, 0, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(166, 255, 0, 0.2);
+  }
 `;
 
 const PreviewContainer = styled.div`
@@ -225,7 +253,7 @@ const PreviewContainer = styled.div`
   transform: translate(-50%, -50%);
   width: 500px;
   height: 400px;
-  margin-left: -25px; 
+  margin-left: -25px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   backdrop-filter: blur(10px);
@@ -233,18 +261,25 @@ const PreviewContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 0 20px rgba(166, 255, 0, 0.1);
   clip-path: inset(0 0 0 0 round 20px);
-  z-index: 2; 
+  z-index: 2;
 `;
 
 const PlanetBuilder = () => {
+  const [mode, setMode] = useState('planet'); // 'planet' or 'system'
   const [planetData, setPlanetData] = useState({
     name: '',
     size: '1',
     atmosphere: 'earth-like',
-    gravity: '1',
     temperature: '20',
     water: '70',
     land: '30'
+  });
+  
+  const [systemData, setSystemData] = useState({
+    name: '',
+    starType: 'yellow-dwarf',
+    planetCount: 1,
+    planets: []
   });
   
   const [showCongrats, setShowCongrats] = useState(false);
@@ -256,6 +291,14 @@ const PlanetBuilder = () => {
       [e.target.name]: value,
       ...(e.target.name === 'water' ? { land: (100 - value).toString() } : {}),
       ...(e.target.name === 'land' ? { water: (100 - value).toString() } : {})
+    }));
+  };
+
+  const handleSystemChange = (e) => {
+    const value = e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
+    setSystemData(prev => ({
+      ...prev,
+      [e.target.name]: value
     }));
   };
 
@@ -273,6 +316,11 @@ const PlanetBuilder = () => {
     setShowCongrats(true);
   };
 
+  const handleSystemSubmit = (e) => {
+    e.preventDefault();
+    setShowCongrats(true);
+  };
+
   const getTemperatureDescription = (temp) => {
     const t = parseFloat(temp);
     if (t < 0) return 'freezing';
@@ -284,6 +332,21 @@ const PlanetBuilder = () => {
 
   return (
     <Layout>
+      <CreationOptions>
+        <OptionButton 
+          active={mode === 'planet'} 
+          onClick={() => setMode('planet')}
+        >
+          Create Planet
+        </OptionButton>
+        <OptionButton 
+          active={mode === 'system'} 
+          onClick={() => setMode('system')}
+        >
+          Create Solar System
+        </OptionButton>
+      </CreationOptions>
+
       <PreviewContainer>
         <Canvas 
           camera={{ position: [0, 0, 3], fov: 45 }}
@@ -291,10 +354,14 @@ const PlanetBuilder = () => {
         >
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} />
-          <Planet 
-            key={`${planetData.water}-${planetData.land}-${planetData.temperature}-${planetData.atmosphere}`} 
-            planetData={planetData} 
-          />
+          {mode === 'planet' ? (
+            <Planet 
+              key={`${planetData.water}-${planetData.land}-${planetData.temperature}-${planetData.atmosphere}`} 
+              planetData={planetData} 
+            />
+          ) : (
+            <SolarSystem systemData={systemData} />
+          )}
           <OrbitControls 
             enableZoom={false}
             minPolarAngle={Math.PI / 4}
@@ -306,107 +373,150 @@ const PlanetBuilder = () => {
       </PreviewContainer>
       
       <Container>
-        <Title>Planet Builder</Title>
-        <Form onSubmit={handleSubmit}>
-          <FormGroup>
-            <Label>Planet Name</Label>
-            <Input
-              type="text"
-              name="name"
-              value={planetData.name}
-              onChange={handleChange}
-              placeholder="Enter planet name"
-            />
-          </FormGroup>
+        <Title>{mode === 'planet' ? 'Planet Builder' : 'Solar System Builder'}</Title>
+        {mode === 'planet' ? (
+          <Form onSubmit={handleSubmit}>
+            <FormGroup>
+              <Label>Planet Name</Label>
+              <Input
+                type="text"
+                name="name"
+                value={planetData.name}
+                onChange={handleChange}
+                placeholder="Enter planet name"
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label>
-              Size <Value>{planetData.size}x</Value>
-            </Label>
-            <Slider
-              type="range"
-              min="0.5"
-              max="2"
-              step="0.1"
-              name="size"
-              value={planetData.size}
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <Label>
+                Size <Value>{planetData.size}x</Value>
+              </Label>
+              <Slider
+                type="range"
+                min="0.5"
+                max="2"
+                step="0.1"
+                name="size"
+                value={planetData.size}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label>
-              Atmosphere Type
-            </Label>
-            <Select name="atmosphere" value={planetData.atmosphere} onChange={handleChange}>
-              <option value="none">None</option>
-              <option value="thin">Thin</option>
-              <option value="earth-like">Earth-like</option>
-              <option value="thick">Thick</option>
-            </Select>
-          </FormGroup>
+            <FormGroup>
+              <Label>
+                Atmosphere Type
+              </Label>
+              <Select name="atmosphere" value={planetData.atmosphere} onChange={handleChange}>
+                <option value="none">None</option>
+                <option value="thin">Thin</option>
+                <option value="earth-like">Earth-like</option>
+                <option value="thick">Thick</option>
+              </Select>
+            </FormGroup>
 
-          <FormGroup>
-            <Label>
-              Temperature <Value>{planetData.temperature}°C</Value>
-            </Label>
-            <Slider
-              type="range"
-              min="-50"
-              max="100"
-              name="temperature"
-              value={planetData.temperature}
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <Label>
+                Temperature <Value>{planetData.temperature}°C</Value>
+              </Label>
+              <Slider
+                type="range"
+                min="-50"
+                max="100"
+                name="temperature"
+                value={planetData.temperature}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label>
-              Water Coverage <Value>{planetData.water}%</Value>
-            </Label>
-            <Slider
-              type="range"
-              min="0"
-              max="100"
-              name="water"
-              value={planetData.water}
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <Label>
+                Water Coverage <Value>{planetData.water}%</Value>
+              </Label>
+              <Slider
+                type="range"
+                min="0"
+                max="100"
+                name="water"
+                value={planetData.water}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label>
-              Land Mass <Value>{planetData.land}%</Value>
-            </Label>
-            <Slider
-              type="range"
-              min="0"
-              max="100"
-              name="land"
-              value={planetData.land}
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <Label>
+                Land Mass <Value>{planetData.land}%</Value>
+              </Label>
+              <Slider
+                type="range"
+                min="0"
+                max="100"
+                name="land"
+                value={planetData.land}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label>
-              Gravity <Value>{planetData.gravity}g</Value>
-            </Label>
-            <Slider
-              type="range"
-              min="0.1"
-              max="3.0"
-              step="0.1"
-              name="gravity"
-              value={planetData.gravity}
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <Label>
+                Gravity <Value>{planetData.gravity}g</Value>
+              </Label>
+              <Slider
+                type="range"
+                min="0.1"
+                max="3.0"
+                step="0.1"
+                name="gravity"
+                value={planetData.gravity}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <Button type="submit" disabled={!planetData.name.trim()}>
-            Create Planet
-          </Button>
-        </Form>
+            <Button type="submit" disabled={!planetData.name.trim()}>
+              Create Planet
+            </Button>
+          </Form>
+        ) : (
+          <Form onSubmit={handleSystemSubmit}>
+            <FormGroup>
+              <Label>System Name</Label>
+              <Input
+                type="text"
+                name="name"
+                value={systemData.name}
+                onChange={handleSystemChange}
+                placeholder="Enter system name"
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label>Star Type</Label>
+              <Select
+                name="starType"
+                value={systemData.starType}
+                onChange={handleSystemChange}
+              >
+                <option value="red-dwarf">Red Dwarf</option>
+                <option value="yellow-dwarf">Yellow Dwarf (like our Sun)</option>
+                <option value="blue-giant">Blue Giant</option>
+                <option value="white-dwarf">White Dwarf</option>
+              </Select>
+            </FormGroup>
+            <FormGroup>
+              <Label>Number of Planets</Label>
+              <Input
+                type="range"
+                name="planetCount"
+                min="1"
+                max="9"
+                value={systemData.planetCount}
+                onChange={handleSystemChange}
+              />
+              <span>{systemData.planetCount} planets</span>
+            </FormGroup>
+            <Button type="submit" disabled={!systemData.name.trim()}>
+              Create Solar System
+            </Button>
+          </Form>
+        )}
       </Container>
 
       {showCongrats && (
@@ -417,12 +527,19 @@ const PlanetBuilder = () => {
               alt="Cosmic Architect"
             />
             <h2>Congratulations! 🎉</h2>
-            <p>
-              You've successfully created {planetData.name}! 
-              This {getTemperatureDescription(planetData.temperature)} planet has {getAtmosphereDescription(planetData.atmosphere)}, 
-              with {planetData.water}% water coverage and {planetData.land}% land mass.
-              Its size is {planetData.size}x Earth's size.
-            </p>
+            {mode === 'planet' ? (
+              <p>
+                You've successfully created {planetData.name}! 
+                This {getTemperatureDescription(planetData.temperature)} planet has {getAtmosphereDescription(planetData.atmosphere)}, 
+                with {planetData.water}% water coverage and {planetData.land}% land mass.
+                Its size is {planetData.size}x Earth's size.
+              </p>
+            ) : (
+              <p>
+                You've successfully created the {systemData.name} solar system! 
+                This system has a {systemData.starType} star and {systemData.planetCount} planets.
+              </p>
+            )}
             <CloseButton onClick={() => setShowCongrats(false)}>
               Close
             </CloseButton>
@@ -618,6 +735,56 @@ const Planet = ({ planetData }) => {
           />
         </mesh>
       )}
+    </group>
+  );
+};
+
+// Add the SolarSystem component
+const SolarSystem = ({ systemData }) => {
+  const groupRef = useRef();
+
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.1;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* Star */}
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[0.5, 32, 32]} />
+        <meshStandardMaterial 
+          color={
+            systemData.starType === 'red-dwarf' ? '#ff4444' :
+            systemData.starType === 'blue-giant' ? '#4444ff' :
+            systemData.starType === 'white-dwarf' ? '#ffffff' :
+            '#ffff44'
+          } 
+          emissive={
+            systemData.starType === 'red-dwarf' ? '#ff0000' :
+            systemData.starType === 'blue-giant' ? '#0000ff' :
+            systemData.starType === 'white-dwarf' ? '#ffffff' :
+            '#ffff00'
+          }
+          emissiveIntensity={2}
+        />
+      </mesh>
+      
+      {/* Placeholder for planets */}
+      {Array.from({ length: systemData.planetCount }).map((_, index) => (
+        <mesh
+          key={index}
+          position={[
+            Math.cos(index * ((Math.PI * 2) / systemData.planetCount)) * (index + 1),
+            0,
+            Math.sin(index * ((Math.PI * 2) / systemData.planetCount)) * (index + 1)
+          ]}
+        >
+          <sphereGeometry args={[0.1, 16, 16]} />
+          <meshStandardMaterial color="#44ff44" />
+        </mesh>
+      ))}
     </group>
   );
 };
