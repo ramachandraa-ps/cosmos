@@ -101,6 +101,12 @@ const InteractionZone = () => {
       path: '/celestial-challenge'
     },
     {
+      title: 'Games',
+      image: '/interaction/games.jpg',
+      description: 'Play educational space games and learn about constellations',
+      path: '/games'
+    },
+    {
       title: 'Webinars',
       image: '/interaction/Webinar.jpg',
       description: 'Join interactive space science webinars',

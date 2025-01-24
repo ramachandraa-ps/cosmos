@@ -13,6 +13,8 @@ import Webinars from './components/Webinars';
 import QuizTime from './components/QuizTime';
 import CategoryPage from './components/categories/CategoryPage';
 import NotificationBell from './components/notifications/NotificationBell';
+import Games from './components/Games';
+import ConstellationConnect from './components/games/ConstellationConnect';
 import { useHistoricEvents } from './services/notificationService';
 
 function AstronautModel() {
@@ -83,6 +85,8 @@ function App() {
           <Route path="/tech-hub/:category" element={<CategoryPage />} />
           <Route path="/webinars" element={<Webinars />} />
           <Route path="/quiz-time" element={<QuizTime />} />
+          <Route path="/games" element={<Games />} />
+          <Route path="/games/constellation-connect" element={<ConstellationConnect />} />
           <Route path="/" element={
             <main className="hero-section">
               <div className="hero-content">
