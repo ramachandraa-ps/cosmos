@@ -18,6 +18,7 @@ const Container = styled.div`
   color: white;
   max-height: 80vh;
   overflow-y: auto;
+  z-index: 10;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -30,6 +31,20 @@ const Container = styled.div`
     background: rgba(166, 255, 0, 0.3);
     border-radius: 4px;
   }
+`;
+
+const VisualizationCard = styled.div`
+  position: fixed;
+  top: 100px;
+  left: 400px;
+  width: calc(100% - 820px);
+  height: calc(100vh - 140px);
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(166, 255, 0, 0.1);
+  overflow: hidden;
+  z-index: 2;
 `;
 
 const Title = styled.h2`
@@ -127,15 +142,6 @@ const PlanetItem = styled.div`
   align-items: center;
 `;
 
-const SolarSystemViz = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: 1;
-`;
-
 const Star = ({ starType }) => {
   const starRef = useRef();
   
@@ -171,19 +177,25 @@ const Planet = ({ position, color, size, orbitRadius }) => {
   const [angle, setAngle] = useState(Math.random() * Math.PI * 2);
   
   useFrame((state, delta) => {
-    setAngle(prev => prev + delta * 0.5);
+    setAngle(prev => prev + delta * 0.3); 
     if (planetRef.current) {
-      planetRef.current.position.x = Math.cos(angle) * orbitRadius;
-      planetRef.current.position.z = Math.sin(angle) * orbitRadius;
-      planetRef.current.rotation.y += delta;
+      const x = Math.cos(angle) * orbitRadius;
+      const z = Math.sin(angle) * orbitRadius;
+      planetRef.current.position.x = x;
+      planetRef.current.position.z = z;
+      planetRef.current.rotation.y += delta * 0.5;
     }
   });
 
   return (
     <group>
-      <mesh ref={planetRef} position={position}>
-        <sphereGeometry args={[size, 24, 24]} />
-        <meshStandardMaterial color={color} />
+      <mesh ref={planetRef} position={[orbitRadius, 0, 0]}>
+        <sphereGeometry args={[size, 32, 32]} />
+        <meshStandardMaterial 
+          color={color}
+          metalness={0.3}
+          roughness={0.7}
+        />
       </mesh>
       <OrbitPath radius={orbitRadius} />
     </group>
@@ -268,9 +280,9 @@ const SolarSystemDesigner = () => {
 
   return (
     <>
-      <SolarSystemViz>
-        <Canvas camera={{ position: [0, 20, 30], fov: 60 }}>
-          <ambientLight intensity={0.3} />
+      <VisualizationCard>
+        <Canvas camera={{ position: [0, 15, 25], fov: 60 }}>
+          <ambientLight intensity={0.5} />
           <pointLight position={[0, 0, 0]} intensity={2} />
           <Star starType={systemData.starType} />
           {systemData.planets.map((planet, index) => (
@@ -282,9 +294,16 @@ const SolarSystemDesigner = () => {
               orbitRadius={planet.orbitRadius}
             />
           ))}
-          <OrbitControls enableZoom={true} enablePan={true} />
+          <OrbitControls 
+            enableZoom={true}
+            enablePan={true}
+            maxDistance={40}
+            minDistance={5}
+            maxPolarAngle={Math.PI / 2}
+            minPolarAngle={Math.PI / 4}
+          />
         </Canvas>
-      </SolarSystemViz>
+      </VisualizationCard>
 
       <Container>
         <Title>Solar System Designer</Title>
@@ -323,21 +342,28 @@ const SolarSystemDesigner = () => {
               onChange={handlePlanetChange}
               placeholder="Planet name"
             />
-            <Input
-              type="range"
-              name="size"
-              min="0.1"
-              max="0.8"
-              step="0.1"
-              value={currentPlanet.size}
-              onChange={handlePlanetChange}
-            />
-            <Input
-              type="color"
-              name="color"
-              value={currentPlanet.color}
-              onChange={handlePlanetChange}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Label style={{ margin: 0 }}>Size: {currentPlanet.size}</Label>
+              <Input
+                type="range"
+                name="size"
+                min="0.1"
+                max="0.8"
+                step="0.1"
+                value={currentPlanet.size}
+                onChange={handlePlanetChange}
+              />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Label style={{ margin: 0 }}>Color:</Label>
+              <Input
+                type="color"
+                name="color"
+                value={currentPlanet.color}
+                onChange={handlePlanetChange}
+                style={{ width: '50px', padding: '0' }}
+              />
+            </div>
             <Button type="button" onClick={addPlanet} disabled={!currentPlanet.name}>
               Add Planet
             </Button>
