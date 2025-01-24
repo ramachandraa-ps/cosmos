@@ -6,6 +6,8 @@ import "./App.css";
 import ChatBot from './components/ChatBot';
 import SpaceMonitor from './components/SpaceMonitor';
 import DeepSpace from './components/DeepSpace';
+import TechHub from './components/TechHub';
+import InteractionZone from './components/InteractionZone';
 
 function AstronautModel() {
   const astronautRef = useRef();
@@ -51,17 +53,19 @@ function App() {
         <nav className="navbar">
           <div className="nav-logo">COSMOS</div>
           <div className="nav-links">
-            <Link to="/">Home</Link>
-            <Link to="/space-monitor">Space Monitor</Link>
-            <Link to="/deep-space">Deep Space</Link>
-            <a href="#tech-hub">Tech Hub</a>
-            <a href="#interaction-zone">Interaction Zone</a>
+          <Link to="/" className="nav-link">Home</Link>
+            <Link to="/space-monitor" className="nav-link">Space Monitor</Link>
+            <Link to="/deep-space" className="nav-link">Deep Space</Link>
+            <Link to="/interaction" className="nav-link">Interaction Zone</Link>
+            <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
           </div>
         </nav>
 
         <Routes>
           <Route path="/space-monitor" element={<SpaceMonitor />} />
           <Route path="/deep-space" element={<DeepSpace />} />
+          <Route path="/tech-hub" element={<TechHub />} />
+          <Route path="/interaction" element={<InteractionZone />} />
           <Route path="/" element={
             <main className="hero-section">
               <div className="hero-content">
