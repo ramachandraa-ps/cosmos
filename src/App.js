@@ -9,6 +9,7 @@ import DeepSpace from './components/DeepSpace';
 import TechHub from './components/TechHub';
 import InteractionZone from './components/InteractionZone';
 import CelestialChallenge from './components/CelestialChallenge';
+import CategoryPage from './components/categories/CategoryPage';
 
 function AstronautModel() {
   const astronautRef = useRef();
@@ -68,6 +69,7 @@ function App() {
           <Route path="/tech-hub" element={<TechHub />} />
           <Route path="/interaction" element={<InteractionZone />} />
           <Route path="/celestial-challenge" element={<CelestialChallenge />} />
+          <Route path="/tech-hub/:category" element={<CategoryPage />} />
           <Route path="/" element={
             <main className="hero-section">
               <div className="hero-content">
