@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@react-three/drei": "^9.121.3",
     "@react-three/fiber": "^8.17.12",
     "@types/node": "^16.18.125",

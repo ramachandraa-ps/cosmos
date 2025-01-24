@@ -10,6 +10,7 @@ import TechHub from './components/TechHub';
 import InteractionZone from './components/InteractionZone';
 import CelestialChallenge from './components/CelestialChallenge';
 import Webinars from './components/Webinars';
+import QuizTime from './components/QuizTime';
 import CategoryPage from './components/categories/CategoryPage';
 
 
@@ -73,6 +74,7 @@ function App() {
           <Route path="/celestial-challenge" element={<CelestialChallenge />} />
           <Route path="/tech-hub/:category" element={<CategoryPage />} />
           <Route path="/webinars" element={<Webinars />} />
+          <Route path="/quiz-time" element={<QuizTime />} />
           <Route path="/" element={
             <main className="hero-section">
               <div className="hero-content">

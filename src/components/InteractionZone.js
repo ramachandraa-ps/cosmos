@@ -104,8 +104,15 @@ const InteractionZone = () => {
       title: 'Webinars',
       image: '/interaction/Webinar.jpg',
       description: 'Join interactive space science webinars',
-      path: '/webinars'}
-      ];
+      path: '/webinars'
+    },
+    {
+      title: 'QUIZ TIME',
+      image: '/interaction/QuizTime.jpg',
+      description: 'Test your cosmic knowledge',
+      path: '/quiz-time'
+    }
+  ];
 
   return (
     <InteractionContainer>
