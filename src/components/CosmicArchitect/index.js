@@ -5,6 +5,7 @@ import { Stars, OrbitControls } from '@react-three/drei';
 import PlanetBuilder from './PlanetBuilder';
 import SolarSystemDesigner from './SolarSystemDesigner';
 import HabitabilityAnalyzer from './HabitabilityAnalyzer';
+import TimeLapse from './TimeLapse';
 
 const pulseAnimation = keyframes`
   0% { transform: scale(1); }
@@ -133,15 +134,18 @@ const ContentOverlay = styled.div`
 function CosmicArchitect() {
   const [activeView, setActiveView] = useState('overview');
   const [planetData, setPlanetData] = useState(null);
+  const [solarSystemData, setSolarSystemData] = useState([]);
 
   const renderActiveComponent = () => {
     switch (activeView) {
       case 'planetBuilder':
         return <PlanetBuilder onPlanetCreate={setPlanetData} />;
       case 'solarSystem':
-        return <SolarSystemDesigner />;
+        return <SolarSystemDesigner onSystemUpdate={setSolarSystemData} />;
       case 'habitability':
         return <HabitabilityAnalyzer planetData={planetData} />;
+      case 'timeline':
+        return <TimeLapse solarSystem={solarSystemData} />;
       default:
         return null;
     }
