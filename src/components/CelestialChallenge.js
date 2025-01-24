@@ -34,30 +34,6 @@ const SolarSystemView = styled.div`
   position: relative;
 `;
 
-const Title = styled.h2`
-  font-size: 2.8rem;
-  text-align: center;
-  margin-bottom: 1rem;
-  background: linear-gradient(45deg, #00ffff, #ff00ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-`;
-
-const InstructionText = styled.p`
-  text-align: center;
-  color: #ffffff;
-  font-size: 1.1rem;
-  margin-bottom: 3rem;
-  opacity: 0.8;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'Inter', sans-serif;
-`;
-
 const PlanetPalette = styled.div`
   width: 300px;
   height: 100vh;
@@ -94,15 +70,38 @@ const PlanetPalette = styled.div`
   }
 `;
 
-const PlanetsContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+const PlanetSlots = styled.div`
+  display: flex;
+  justify-content: center;
   gap: 20px;
-  width: 100%;
-  padding: 10px;
-  justify-items: center;
-  align-content: start;
-  flex: 1;
+  margin: 40px 0;
+  padding: 20px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+`;
+
+const PlanetSlot = styled.div`
+  width: 100px;
+  height: 100px;
+  border: 2px dashed ${props => props.isOccupied 
+    ? (props.isCorrect ? '#4CAF50' : '#f44336')
+    : 'rgba(255, 255, 255, 0.3)'};
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  background: ${props => props.isOccupied 
+    ? (props.isCorrect ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)')
+    : 'transparent'};
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 const PlanetCard = styled.div`
@@ -119,6 +118,7 @@ const PlanetCard = styled.div`
   width: 120px;
   height: 160px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
 
   &:hover {
     transform: translateY(-3px);
@@ -126,54 +126,55 @@ const PlanetCard = styled.div`
     box-shadow: 0 8px 25px rgba(31, 38, 135, 0.37);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
+
+  .planet-container {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  span {
+    color: white;
+    font-size: 1rem;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    margin-top: auto;
+  }
 `;
 
-const PlanetName = styled.h3`
-  color: #fff;
-  margin: 8px 0 4px;
-  font-size: 1.1em;
+const Title = styled.h2`
+  font-size: 2.8rem;
   text-align: center;
-  white-space: nowrap;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 `;
 
-const PlanetInfo = styled.p`
-  color: #ccc;
-  margin: 0;
-  font-size: 0.8em;
+const InstructionText = styled.p`
   text-align: center;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.4;
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
   opacity: 0.8;
-`;
-
-const FeedbackMessage = styled.div`
-  color: #4CAF50;
-  font-size: 1.2em;
-  margin: 20px 0;
-  padding: 15px 30px;
-  border-radius: 10px;
-  background: rgba(76, 175, 80, 0.1);
-  border: 1px solid #4CAF50;
-  opacity: ${props => props.visible ? 1 : 0};
-  transition: opacity 0.3s ease;
-  backdrop-filter: blur(5px);
-  text-align: center;
-  max-width: 80%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Inter', sans-serif;
 `;
 
 const ScoreDisplay = styled.div`
-  position: absolute;
-  top: 30px;
-  right: 140px;
+  position: relative;
+  margin: 20px auto;
   color: #fff;
-  font-size: 1.5em;
-  padding: 12px 30px;
+  font-size: 1.2em;
+  padding: 8px 20px;
   background: rgba(0, 0, 0, 0.7);
-  border-radius: 15px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(8px);
@@ -181,12 +182,13 @@ const ScoreDisplay = styled.div`
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   letter-spacing: 0.5px;
+  width: fit-content;
 
   &::before {
     content: '🎯';
-    font-size: 1.2em;
+    font-size: 1em;
   }
 `;
 
@@ -217,17 +219,19 @@ const ResetButton = styled.button`
   }
 `;
 
-const PlanetSlots = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 40px 0;
-  padding: 20px;
-  flex-wrap: wrap;
-  max-width: 1200px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 15px;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+const FeedbackMessage = styled.div`
+  color: #4CAF50;
+  font-size: 1.2em;
+  margin: 20px 0;
+  padding: 15px 30px;
+  border-radius: 10px;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid #4CAF50;
+  opacity: ${props => props.visible ? 1 : 0};
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(5px);
+  text-align: center;
+  max-width: 80%;
 `;
 
 const planetData = [
@@ -405,32 +409,6 @@ const PlanetPreview = ({ color, scale, ringScale }) => {
   );
 };
 
-const PlanetSlot = ({ index, isOccupied, isCorrect, onDrop }) => {
-  const borderColor = isOccupied 
-    ? (isCorrect ? '#4CAF50' : '#f44336')
-    : 'rgba(255, 255, 255, 0.3)';
-
-  return (
-    <div
-      style={{
-        width: '100px',
-        height: '100px',
-        border: `2px dashed ${borderColor}`,
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transition: 'all 0.3s ease',
-        background: isOccupied 
-          ? (isCorrect ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)')
-          : 'transparent'
-      }}
-      onDrop={onDrop}
-      onDragOver={(e) => e.preventDefault()}
-    />
-  );
-};
-
 const PlacedPlanet = ({ color, scale, ringScale }) => {
   return (
     <div style={{ width: '100%', height: '100%' }}>
@@ -491,116 +469,97 @@ const SolarSystem = ({ planets }) => {
 const CelestialChallenge = () => {
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState('');
-  const [showFeedback, setShowFeedback] = useState(false);
   const [planetOrder, setPlanetOrder] = useState(Array(8).fill(null));
-  const [availablePlanets, setAvailablePlanets] = useState(() => {
-    return [...planetData].sort(() => Math.random() - 0.5);
-  });
+  const [availablePlanets, setAvailablePlanets] = useState(planetData);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const handleDragStart = (e, planet) => {
     e.dataTransfer.setData('planet', JSON.stringify(planet));
   };
 
-  const handleDrop = (e, slotIndex) => {
+  const handleDrop = (e, index) => {
     e.preventDefault();
     const planet = JSON.parse(e.dataTransfer.getData('planet'));
-    const correctOrder = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
     
-    // Check if slot already has a planet
-    if (planetOrder[slotIndex] !== null) {
-      setFeedback("This slot is already occupied!");
-      setShowFeedback(true);
-      setTimeout(() => setShowFeedback(false), 2000);
-      return;
-    }
-
-    // Update planet order
+    // Remove the planet from available planets
+    setAvailablePlanets(prev => prev.filter(p => p.name !== planet.name));
+    
+    // Add planet to order
     const newOrder = [...planetOrder];
-    newOrder[slotIndex] = planet;
+    newOrder[index] = planet;
     setPlanetOrder(newOrder);
     
-    // Remove planet from available planets
-    setAvailablePlanets(prev => prev.filter(p => p.name !== planet.name));
-
-    // Check if placement is correct
-    const isCorrectPlacement = planet.name === correctOrder[slotIndex];
-    
-    // Update score and feedback
-    if (isCorrectPlacement) {
+    // Check if the placement is correct
+    if (planet.name === planetData[index].name) {
       setScore(prev => prev + 10);
-      setFeedback(`Correct! ${planet.name} is in the right position!`);
+      setFeedback('Correct placement! +10 points');
     } else {
-      setScore(prev => Math.max(0, prev - 5));
-      setFeedback(`Try again! That's not where ${planet.name} belongs.`);
+      setFeedback('Try again! That\'s not the correct position');
     }
     setShowFeedback(true);
     setTimeout(() => setShowFeedback(false), 2000);
-
-    // Check if all planets are placed correctly
-    const allCorrect = newOrder.every((p, i) => p?.name === correctOrder[i]);
-    if (allCorrect) {
-      setScore(prev => prev + 50); // Bonus for completing
-      setFeedback("Perfect! You've arranged all planets in the correct order!");
-      setShowFeedback(true);
-    }
   };
 
   const handleReset = () => {
     setPlanetOrder(Array(8).fill(null));
-    setAvailablePlanets([...planetData].sort(() => Math.random() - 0.5));
+    setAvailablePlanets(planetData);
     setScore(0);
-    setShowFeedback(false);
     setFeedback('');
   };
 
   return (
-    <ChallengeContainer>
-      <MainCanvas>
-        <Title>Solar System Challenge</Title>
-        <InstructionText>
-          Drag and drop planets to their correct positions in order from the Sun
-        </InstructionText>
-        <SolarSystemView>
-          <SolarSystem planets={planetOrder} />
-        </SolarSystemView>
-        <PlanetSlots>
-          {planetOrder.map((planet, index) => {
-            const correctOrder = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
-            const isCorrect = planet?.name === correctOrder[index];
-            
-            return (
-              <PlanetSlot
-                key={index}
-                index={index}
-                isOccupied={Boolean(planet)}
-                isCorrect={isCorrect}
-                onDrop={(e) => handleDrop(e, index)}
-              >
-                {planet && <PlacedPlanet {...planet} />}
-              </PlanetSlot>
-            );
-          })}
-        </PlanetSlots>
-        {showFeedback && <FeedbackMessage visible={showFeedback}>{feedback}</FeedbackMessage>}
-        <ScoreDisplay>Score: {score}</ScoreDisplay>
-      </MainCanvas>
-      <PlanetPalette>
-        <PlanetsContainer>
-          {availablePlanets.map((planet) => (
-            <PlanetCard
-              key={planet.name}
-              draggable
-              onDragStart={(e) => handleDragStart(e, planet)}
+    <MainCanvas>
+      <Title>Solar System Challenge</Title>
+      <InstructionText>
+        Drag and drop planets to their correct positions in order from the Sun
+      </InstructionText>
+      <SolarSystemView>
+        <SolarSystem planets={planetOrder} />
+      </SolarSystemView>
+      <PlanetSlots>
+        {[...Array(8)].map((_, index) => {
+          const planet = planetOrder[index];
+          return (
+            <PlanetSlot
+              key={index}
+              isOccupied={!!planet}
+              isCorrect={planet?.name === planetData[index].name}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => handleDrop(e, index)}
             >
-              <PlanetPreview {...planet} />
-              <PlanetName>{planet.name}</PlanetName>
-              <PlanetInfo>{planet.info}</PlanetInfo>
-            </PlanetCard>
-          ))}
-        </PlanetsContainer>
-        <ResetButton onClick={handleReset}>Reset Challenge</ResetButton>
+              {planet && (
+                <PlacedPlanet
+                  color={planet.color}
+                  scale={planet.scale}
+                  ringScale={planet.ringScale}
+                />
+              )}
+            </PlanetSlot>
+          );
+        })}
+      </PlanetSlots>
+      <ScoreDisplay>Score: {score}</ScoreDisplay>
+      {showFeedback && <FeedbackMessage visible={showFeedback}>{feedback}</FeedbackMessage>}
+      <ResetButton onClick={handleReset}>Reset Challenge</ResetButton>
+      <PlanetPalette>
+        {availablePlanets.map((planet) => (
+          <PlanetCard
+            key={planet.name}
+            draggable
+            onDragStart={(e) => handleDragStart(e, planet)}
+          >
+            <div className="planet-container">
+              <PlacedPlanet
+                color={planet.color}
+                scale={planet.scale}
+                ringScale={planet.ringScale}
+              />
+            </div>
+            <span>{planet.name}</span>
+          </PlanetCard>
+        ))}
       </PlanetPalette>
-    </ChallengeContainer>
+    </MainCanvas>
   );
 };
 
