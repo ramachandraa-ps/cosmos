@@ -9,26 +9,29 @@ const ChallengeContainer = styled.div`
   width: 100vw;
   height: 100vh;
   background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
+  position: relative;
 `;
 
 const MainCanvas = styled.div`
   flex: 1;
-  padding: 20px;
+  padding: 30px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
   background: radial-gradient(circle at center, #000235 0%, #000000 100%);
   position: relative;
+  margin-right: 300px;
 `;
 
 const SolarSystemView = styled.div`
   width: 100%;
   height: 400px;
   margin: 20px 0;
-  border-radius: 10px;
+  border-radius: 15px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.3);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  position: relative;
 `;
 
 const Title = styled.h2`
@@ -37,6 +40,8 @@ const Title = styled.h2`
   margin-bottom: 20px;
   font-size: 2em;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  padding-top: 20px;
+  margin-right: 160px;
 `;
 
 const InstructionText = styled.p`
@@ -45,26 +50,49 @@ const InstructionText = styled.p`
   margin-bottom: 30px;
   font-size: 1.2em;
   opacity: 0.8;
+  padding: 0 20px;
 `;
 
 const PlanetPalette = styled.div`
   width: 300px;
-  min-height: 100vh;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  height: 100vh;
+  padding: 30px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(15px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  overflow-y: auto;
+  gap: 25px;
+  position: fixed;
+  right: 0;
+  top: 0;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+
+  /* Scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
 `;
 
 const PlanetsContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+  gap: 20px;
   width: 100%;
   padding: 10px;
   justify-items: center;
@@ -73,8 +101,8 @@ const PlanetsContainer = styled.div`
 `;
 
 const PlanetCard = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
   padding: 15px;
   cursor: move;
   transition: all 0.3s ease;
@@ -85,56 +113,76 @@ const PlanetCard = styled.div`
   align-items: center;
   width: 120px;
   height: 160px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    box-shadow: 0 8px 25px rgba(31, 38, 135, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 `;
 
 const PlanetName = styled.h3`
   color: #fff;
   margin: 8px 0 4px;
-  font-size: 1em;
+  font-size: 1.1em;
   text-align: center;
   white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 `;
 
 const PlanetInfo = styled.p`
   color: #ccc;
   margin: 0;
-  font-size: 0.75em;
+  font-size: 0.8em;
   text-align: center;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.3;
+  line-height: 1.4;
+  opacity: 0.8;
 `;
 
 const FeedbackMessage = styled.div`
   color: #4CAF50;
   font-size: 1.2em;
   margin: 20px 0;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 15px 30px;
+  border-radius: 10px;
   background: rgba(76, 175, 80, 0.1);
   border: 1px solid #4CAF50;
   opacity: ${props => props.visible ? 1 : 0};
   transition: opacity 0.3s ease;
+  backdrop-filter: blur(5px);
+  text-align: center;
+  max-width: 80%;
 `;
 
 const ScoreDisplay = styled.div`
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 30px;
+  right: 140px;
   color: #fff;
   font-size: 1.5em;
-  padding: 10px 20px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 30px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0.5px;
+
+  &::before {
+    content: '🎯';
+    font-size: 1.2em;
+  }
 `;
 
 const ResetButton = styled.button`
@@ -142,17 +190,25 @@ const ResetButton = styled.button`
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 12px 25px;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   width: 200px;
   font-size: 1.1em;
   margin-top: auto;
   margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  &:active {
+    transform: translateY(1px);
   }
 `;
 
@@ -160,9 +216,13 @@ const PlanetSlots = styled.div`
   display: flex;
   justify-content: center;
   gap: 20px;
-  margin-top: 40px;
+  margin: 40px 0;
+  padding: 20px;
   flex-wrap: wrap;
   max-width: 1200px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
 `;
 
 const planetData = [
