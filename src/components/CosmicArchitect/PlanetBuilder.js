@@ -7,19 +7,19 @@ import cosmicArchitectImage from '../../assets/cosmic_architect.jpeg';
 
 const Container = styled.div`
   position: fixed;
-  top: 50px;
+  top: 100px;
   right: 20px;
   width: 400px;
-  max-height: 90vh;
-  overflow-y: auto;
   background: rgba(15, 15, 25, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 1.5rem;
   border: 1px solid rgba(166, 255, 0, 0.1);
   color: white;
-  z-index: 3; 
-  /* Custom scrollbar */
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 10;
+
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -31,6 +31,20 @@ const Container = styled.div`
     background: rgba(166, 255, 0, 0.3);
     border-radius: 4px;
   }
+`;
+
+const VisualizationCard = styled.div`
+  position: fixed;
+  top: 100px;
+  left: 350px;
+  width: calc(100% - 820px);
+  height: calc(100vh - 140px);
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(166, 255, 0, 0.1);
+  overflow: hidden;
+  z-index: 2;
 `;
 
 const ControlGroup = styled.div`
@@ -331,29 +345,14 @@ const PlanetBuilder = () => {
   };
 
   return (
-    <Layout>
-      <CreationOptions>
-        <OptionButton 
-          active={mode === 'planet'} 
-          onClick={() => setMode('planet')}
-        >
-          Create Planet
-        </OptionButton>
-        <OptionButton 
-          active={mode === 'system'} 
-          onClick={() => setMode('system')}
-        >
-          Create Solar System
-        </OptionButton>
-      </CreationOptions>
-
-      <PreviewContainer>
+    <>
+      <VisualizationCard>
         <Canvas 
-          camera={{ position: [0, 0, 3], fov: 45 }}
+          camera={{ position: [0, 2, 5], fov: 60 }}
           style={{ background: 'transparent' }}
         >
           <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} />
+          <pointLight position={[10, 10, 10]} intensity={1} />
           {mode === 'planet' ? (
             <Planet 
               key={`${planetData.water}-${planetData.land}-${planetData.temperature}-${planetData.atmosphere}`} 
@@ -363,15 +362,16 @@ const PlanetBuilder = () => {
             <SolarSystem systemData={systemData} />
           )}
           <OrbitControls 
-            enableZoom={false}
+            enableZoom={true}
+            enablePan={true}
+            maxDistance={10}
+            minDistance={3}
+            maxPolarAngle={Math.PI / 1.5}
             minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI * 3/4}
-            minAzimuthAngle={-Math.PI / 4}
-            maxAzimuthAngle={Math.PI / 4}
           />
         </Canvas>
-      </PreviewContainer>
-      
+      </VisualizationCard>
+
       <Container>
         <Title>{mode === 'planet' ? 'Planet Builder' : 'Solar System Builder'}</Title>
         {mode === 'planet' ? (
@@ -546,7 +546,7 @@ const PlanetBuilder = () => {
           </CongratsCard>
         </CongratsOverlay>
       )}
-    </Layout>
+    </>
   );
 };
 

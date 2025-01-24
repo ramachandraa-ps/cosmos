@@ -224,10 +224,6 @@ function CosmicArchitect() {
       <ContentOverlay>
         <Header>
           <Title>Cosmic Architect</Title>
-          <Description>
-            Design and simulate celestial bodies and entire solar systems.
-            Explore the possibilities of planetary formation and cosmic evolution.
-          </Description>
         </Header>
 
         <ControlPanel>

@@ -36,7 +36,7 @@ const Container = styled.div`
 const VisualizationCard = styled.div`
   position: fixed;
   top: 100px;
-  left: 400px;
+  left: 350px;
   width: calc(100% - 820px);
   height: calc(100vh - 140px);
   background: rgba(15, 15, 25, 0.95);
