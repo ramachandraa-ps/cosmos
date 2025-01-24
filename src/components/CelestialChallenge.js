@@ -14,11 +14,11 @@ const ChallengeContainer = styled.div`
 
 const MainCanvas = styled.div`
   flex: 1;
-  padding: 30px 40px;
+  padding: 6rem 2rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: radial-gradient(circle at center, #000235 0%, #000000 100%);
+  background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
   position: relative;
   margin-right: 300px;
 `;
@@ -35,22 +35,27 @@ const SolarSystemView = styled.div`
 `;
 
 const Title = styled.h2`
-  color: #fff;
+  font-size: 2.8rem;
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 2em;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-  padding-top: 20px;
-  margin-right: 160px;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 `;
 
 const InstructionText = styled.p`
-  color: #fff;
   text-align: center;
-  margin-bottom: 30px;
-  font-size: 1.2em;
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
   opacity: 0.8;
-  padding: 0 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Inter', sans-serif;
 `;
 
 const PlanetPalette = styled.div`
