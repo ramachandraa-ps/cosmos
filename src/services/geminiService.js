@@ -1,6 +1,13 @@
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
 const generatePrompt = (category, nameQuery, dateQuery) => {
+  // Define category context but keep it flexible
+  const categoryContext = {
+    satellites: 'Focus on artificial satellites, space stations, and orbital spacecraft.',
+    astronauts: 'Focus on astronauts, cosmonauts, and space travelers.',
+    rockets: 'Focus on rockets, launch vehicles, and space propulsion systems.'
+  };
+
   let prompt = `You are a space research expert. I need detailed information about ${category}`;
   
   if (nameQuery) {
@@ -10,6 +17,9 @@ const generatePrompt = (category, nameQuery, dateQuery) => {
   if (dateQuery) {
     prompt += ` from around the time period "${dateQuery}"`;
   }
+
+  // Add category-specific focus without being too restrictive
+  prompt += `. ${categoryContext[category] || ''}`;
 
   prompt += `. Please provide information in the following JSON format:
   [
@@ -24,7 +34,8 @@ const generatePrompt = (category, nameQuery, dateQuery) => {
   2. Include closely related items even if the spelling doesn't match exactly
   3. For space missions, include launch date, mission details, and achievements
   4. Sort results by relevance
-  5. Ensure all dates are in YYYY-MM-DD format when possible`;
+  5. Ensure all dates are in YYYY-MM-DD format when possible
+  6. Prioritize results related to ${category}`;
 
   return prompt;
 };
@@ -92,14 +103,28 @@ export const searchWithGemini = async (category, nameQuery, dateQuery) => {
         }];
       }
 
-      const formattedResults = parsedData.map(item => ({
-        title: item.title || 'Untitled',
-        description: item.description || 'No description available',
-        date: item.date ? new Date(item.date).toISOString().split('T')[0] : 'Date not available'
-      }));
+      // Filter results to prioritize category-specific content
+      const formattedResults = parsedData
+        .map(item => ({
+          title: item.title || 'Untitled',
+          description: item.description || 'No description available',
+          date: item.date ? new Date(item.date).toISOString().split('T')[0] : 'Date not available'
+        }))
+        .filter(item => {
+          const content = (item.title + ' ' + item.description).toLowerCase();
+          const categoryTerms = {
+            satellites: ['satellite', 'orbit', 'space station', 'spacecraft'],
+            astronauts: ['astronaut', 'cosmonaut', 'spacewalk', 'space travel'],
+            rockets: ['rocket', 'launch', 'propulsion', 'spacecraft']
+          };
+          
+          // Check if content contains category-specific terms
+          return categoryTerms[category]?.some(term => content.includes(term)) ?? true;
+        });
 
       cachedResults = formattedResults;
-      return formattedResults;
+      return formattedResults.length > 0 ? formattedResults : parsedData;
+
     } catch (error) {
       console.error('Error parsing Gemini response:', error);
       if (cachedResults) {
