@@ -63,12 +63,33 @@ const ControlPanel = styled.div`
   top: 100px;
   left: 20px;
   width: 300px;
+  min-height: calc(100vh - 140px);
   background: rgba(15, 15, 25, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 1.5rem;
   border: 1px solid rgba(166, 255, 0, 0.1);
   z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const ToolSection = styled.div`
+  border-bottom: 1px solid rgba(166, 255, 0, 0.1);
+  padding-bottom: 1rem;
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const SectionTitle = styled.h3`
+  color: #a6ff00;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  opacity: 0.8;
 `;
 
 const ToolButton = styled.button`
@@ -84,6 +105,9 @@ const ToolButton = styled.button`
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
   ${props => props.active && css`
     animation: ${pulseAnimation} 2s infinite ease-in-out,
@@ -117,6 +141,25 @@ const ToolButton = styled.button`
   }
 `;
 
+const ToolIcon = styled.span`
+  font-size: 1.5rem;
+`;
+
+const ToolInfo = styled.div`
+  text-align: left;
+  flex: 1;
+`;
+
+const ToolName = styled.div`
+  font-weight: 500;
+`;
+
+const ToolDescription = styled.div`
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-top: 0.2rem;
+`;
+
 const CanvasContainer = styled.div`
   position: fixed;
   top: 0;
@@ -135,6 +178,37 @@ function CosmicArchitect() {
   const [activeView, setActiveView] = useState('overview');
   const [planetData, setPlanetData] = useState(null);
   const [solarSystemData, setSolarSystemData] = useState([]);
+
+  const tools = [
+    {
+      id: 'planetBuilder',
+      icon: '🌍',
+      name: 'Planet Builder',
+      description: 'Create and customize unique planets',
+      section: 'creation'
+    },
+    {
+      id: 'solarSystem',
+      icon: '☀️',
+      name: 'Solar System Designer',
+      description: 'Design complete solar systems',
+      section: 'creation'
+    },
+    {
+      id: 'habitability',
+      icon: '🌱',
+      name: 'Habitability Analyzer',
+      description: 'Analyze life-sustaining potential',
+      section: 'analysis'
+    },
+    {
+      id: 'timeline',
+      icon: '⏳',
+      name: 'Time-Lapse Mode',
+      description: 'Watch your system evolve',
+      section: 'simulation'
+    }
+  ];
 
   const renderActiveComponent = () => {
     switch (activeView) {
@@ -180,30 +254,62 @@ function CosmicArchitect() {
         </Header>
 
         <ControlPanel>
-          <ToolButton 
-            active={activeView === 'planetBuilder'}
-            onClick={() => setActiveView('planetBuilder')}
-          >
-            🌍 Planet Builder
-          </ToolButton>
-          <ToolButton 
-            active={activeView === 'solarSystem'}
-            onClick={() => setActiveView('solarSystem')}
-          >
-            ☀️ Solar System Designer
-          </ToolButton>
-          <ToolButton 
-            active={activeView === 'habitability'}
-            onClick={() => setActiveView('habitability')}
-          >
-            🌱 Habitability Analyzer
-          </ToolButton>
-          <ToolButton 
-            active={activeView === 'timeline'}
-            onClick={() => setActiveView('timeline')}
-          >
-            ⏳ Time-Lapse Mode
-          </ToolButton>
+          <ToolSection>
+            <SectionTitle>Creation Tools</SectionTitle>
+            {tools
+              .filter(tool => tool.section === 'creation')
+              .map(tool => (
+                <ToolButton
+                  key={tool.id}
+                  active={activeView === tool.id}
+                  onClick={() => setActiveView(tool.id)}
+                >
+                  <ToolIcon>{tool.icon}</ToolIcon>
+                  <ToolInfo>
+                    <ToolName>{tool.name}</ToolName>
+                    <ToolDescription>{tool.description}</ToolDescription>
+                  </ToolInfo>
+                </ToolButton>
+              ))}
+          </ToolSection>
+
+          <ToolSection>
+            <SectionTitle>Analysis Tools</SectionTitle>
+            {tools
+              .filter(tool => tool.section === 'analysis')
+              .map(tool => (
+                <ToolButton
+                  key={tool.id}
+                  active={activeView === tool.id}
+                  onClick={() => setActiveView(tool.id)}
+                >
+                  <ToolIcon>{tool.icon}</ToolIcon>
+                  <ToolInfo>
+                    <ToolName>{tool.name}</ToolName>
+                    <ToolDescription>{tool.description}</ToolDescription>
+                  </ToolInfo>
+                </ToolButton>
+              ))}
+          </ToolSection>
+
+          <ToolSection>
+            <SectionTitle>Simulation Tools</SectionTitle>
+            {tools
+              .filter(tool => tool.section === 'simulation')
+              .map(tool => (
+                <ToolButton
+                  key={tool.id}
+                  active={activeView === tool.id}
+                  onClick={() => setActiveView(tool.id)}
+                >
+                  <ToolIcon>{tool.icon}</ToolIcon>
+                  <ToolInfo>
+                    <ToolName>{tool.name}</ToolName>
+                    <ToolDescription>{tool.description}</ToolDescription>
+                  </ToolInfo>
+                </ToolButton>
+              ))}
+          </ToolSection>
         </ControlPanel>
 
         {renderActiveComponent()}
