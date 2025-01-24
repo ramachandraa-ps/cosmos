@@ -418,7 +418,7 @@ const PlacedPlanet = ({ color, scale, ringScale }) => {
         <Planet 
           color={color}
           scale={scale * 2}
-          ringScale={ringScale}
+          ringScale={0}
         />
       </Canvas>
     </div>
@@ -530,8 +530,8 @@ const CelestialChallenge = () => {
               {planet && (
                 <PlacedPlanet
                   color={planet.color}
-                  scale={planet.scale}
-                  ringScale={planet.ringScale}
+                  scale={planet.scale * 0.6}
+                  ringScale={0}
                 />
               )}
             </PlanetSlot>
@@ -551,8 +551,8 @@ const CelestialChallenge = () => {
             <div className="planet-container">
               <PlacedPlanet
                 color={planet.color}
-                scale={planet.scale}
-                ringScale={planet.ringScale}
+                scale={planet.scale * 0.6}
+                ringScale={0}
               />
             </div>
             <span>{planet.name}</span>
