@@ -127,6 +127,15 @@ const PlanetItem = styled.div`
   align-items: center;
 `;
 
+const SolarSystemViz = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+`;
+
 const Star = ({ starType }) => {
   const starRef = useRef();
   
@@ -259,6 +268,24 @@ const SolarSystemDesigner = () => {
 
   return (
     <>
+      <SolarSystemViz>
+        <Canvas camera={{ position: [0, 20, 30], fov: 60 }}>
+          <ambientLight intensity={0.3} />
+          <pointLight position={[0, 0, 0]} intensity={2} />
+          <Star starType={systemData.starType} />
+          {systemData.planets.map((planet, index) => (
+            <Planet
+              key={planet.id}
+              position={[planet.orbitRadius, 0, 0]}
+              color={planet.color}
+              size={planet.size}
+              orbitRadius={planet.orbitRadius}
+            />
+          ))}
+          <OrbitControls enableZoom={true} enablePan={true} />
+        </Canvas>
+      </SolarSystemViz>
+
       <Container>
         <Title>Solar System Designer</Title>
         <Form onSubmit={handleSubmit}>
