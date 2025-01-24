@@ -70,6 +70,36 @@ const Score = styled.div`
 
 const GameOverScreen = styled(StartScreen)``;
 
+class Particle {
+  constructor(x, y, color, speed, life, size) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.speed = speed;
+    this.angle = Math.random() * Math.PI * 2;
+    this.dx = Math.cos(this.angle) * speed;
+    this.dy = Math.sin(this.angle) * speed;
+    this.life = life;
+    this.originalLife = life;
+    this.size = size;
+  }
+
+  update() {
+    this.x += this.dx;
+    this.y += this.dy;
+    this.life--;
+    return this.life > 0;
+  }
+
+  draw(ctx) {
+    const alpha = this.life / this.originalLife;
+    ctx.fillStyle = `${this.color}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size * alpha, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
 class Rocket {
   constructor(canvas) {
     this.canvas = canvas;
@@ -173,7 +203,7 @@ class Rocket {
     if (this.isMovingDown) this.y += this.speed;
     if (this.isMovingLeft) this.x -= this.speed;
     if (this.isMovingRight) this.x += this.speed;
-
+    
     // Keep rocket within canvas bounds
     this.x = Math.max(this.width/2, Math.min(this.canvas.width - this.width/2, this.x));
     this.y = Math.max(this.height/2, Math.min(this.canvas.height - this.height/2, this.y));
@@ -183,19 +213,15 @@ class Rocket {
     switch(e.key) {
       case 'ArrowUp':
         this.isMovingUp = true;
-        this.angle = -Math.PI/2;
         break;
       case 'ArrowDown':
         this.isMovingDown = true;
-        this.angle = Math.PI/2;
         break;
       case 'ArrowLeft':
         this.isMovingLeft = true;
-        this.angle = Math.PI;
         break;
       case 'ArrowRight':
         this.isMovingRight = true;
-        this.angle = 0;
         break;
     }
   }
@@ -260,6 +286,10 @@ class Asteroid {
     }
 
     this.generateVertices();
+    this.particles = [];
+    this.trailType = Math.random() < 0.5 ? 'fire' : 'ice';
+    this.glowIntensity = 0;
+    this.glowDirection = 1;
   }
 
   generateVertices() {
@@ -295,7 +325,34 @@ class Asteroid {
     this.ctx.save();
     this.ctx.translate(this.x, this.y);
     this.ctx.rotate(this.angle);
-    
+
+    // Draw trail
+    const trailLength = this.radius * 3;
+    const trailGradient = this.ctx.createLinearGradient(
+      -Math.cos(this.angle) * trailLength,
+      -Math.sin(this.angle) * trailLength,
+      0,
+      0
+    );
+
+    if (this.trailType === 'fire') {
+      trailGradient.addColorStop(0, 'rgba(255, 100, 0, 0)');
+      trailGradient.addColorStop(0.4, 'rgba(255, 150, 0, 0.2)');
+      trailGradient.addColorStop(1, 'rgba(255, 200, 0, 0.4)');
+    } else {
+      trailGradient.addColorStop(0, 'rgba(100, 200, 255, 0)');
+      trailGradient.addColorStop(0.4, 'rgba(150, 220, 255, 0.2)');
+      trailGradient.addColorStop(1, 'rgba(200, 240, 255, 0.4)');
+    }
+
+    this.ctx.beginPath();
+    this.ctx.fillStyle = trailGradient;
+    this.ctx.moveTo(-Math.cos(this.angle) * trailLength, -Math.sin(this.angle) * trailLength);
+    this.ctx.lineTo(-this.radius, -this.radius);
+    this.ctx.lineTo(-this.radius, this.radius);
+    this.ctx.closePath();
+    this.ctx.fill();
+
     // Create gradient for base asteroid color
     const gradient = this.ctx.createRadialGradient(0, 0, 0, 0, 0, this.radius);
     gradient.addColorStop(0, '#8B8B8B');    // Light gray center
@@ -335,19 +392,58 @@ class Asteroid {
     });
     
     // Add a subtle outer glow
-    this.ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
-    this.ctx.shadowBlur = 10;
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    this.ctx.lineWidth = 2;
-    this.ctx.stroke();
+    const glowSize = 20;
+    const glowGradient = this.ctx.createRadialGradient(0, 0, this.radius, 0, 0, this.radius + glowSize);
+    if (this.trailType === 'fire') {
+      glowGradient.addColorStop(0, 'rgba(255, 100, 0, 0.3)');
+      glowGradient.addColorStop(1, 'rgba(255, 100, 0, 0)');
+    } else {
+      glowGradient.addColorStop(0, 'rgba(100, 200, 255, 0.3)');
+      glowGradient.addColorStop(1, 'rgba(100, 200, 255, 0)');
+    }
     
+    this.ctx.beginPath();
+    this.ctx.fillStyle = glowGradient;
+    this.ctx.arc(0, 0, this.radius + glowSize, 0, Math.PI * 2);
+    this.ctx.fill();
+
     this.ctx.restore();
+
+    // Draw particles
+    this.particles.forEach(particle => particle.draw(this.ctx));
   }
 
   update() {
     this.x += this.dx * this.speed;
     this.y += this.dy * this.speed;
     this.angle += this.rotationSpeed;
+
+    // Update glow
+    this.glowIntensity += 0.05 * this.glowDirection;
+    if (this.glowIntensity >= 1 || this.glowIntensity <= 0) {
+      this.glowDirection *= -1;
+    }
+
+    // Add particles
+    if (Math.random() < 0.3) {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = this.radius * 0.8;
+      const particleX = this.x + Math.cos(angle) * distance;
+      const particleY = this.y + Math.sin(angle) * distance;
+      
+      const color = this.trailType === 'fire' ? '#ff6600' : '#66ccff';
+      this.particles.push(new Particle(
+        particleX,
+        particleY,
+        color,
+        1 + Math.random(),
+        30 + Math.random() * 20,
+        1 + Math.random()
+      ));
+    }
+
+    // Update particles
+    this.particles = this.particles.filter(particle => particle.update());
   }
 
   isOffscreen() {
