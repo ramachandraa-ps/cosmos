@@ -97,31 +97,73 @@ class Rocket {
     this.ctx.translate(this.x, this.y);
     this.ctx.rotate(this.angle);
     
-    // Draw rocket body
+    // Draw rocket body (sleek design)
     this.ctx.beginPath();
     this.ctx.moveTo(0, -this.height/2);
-    this.ctx.lineTo(this.width/4, this.height/2);
-    this.ctx.lineTo(-this.width/4, this.height/2);
-    this.ctx.closePath();
-    this.ctx.fillStyle = '#ff4444';
+    this.ctx.bezierCurveTo(
+      this.width/3, -this.height/2,
+      this.width/3, this.height/2,
+      0, this.height/2
+    );
+    this.ctx.bezierCurveTo(
+      -this.width/3, this.height/2,
+      -this.width/3, -this.height/2,
+      0, -this.height/2
+    );
+    this.ctx.fillStyle = '#ff3366';
+    this.ctx.fill();
+    
+    // Draw rocket nose cone
+    this.ctx.beginPath();
+    this.ctx.moveTo(-this.width/4, -this.height/3);
+    this.ctx.lineTo(0, -this.height/2 - 10);
+    this.ctx.lineTo(this.width/4, -this.height/3);
+    this.ctx.fillStyle = '#cc0033';
     this.ctx.fill();
     
     // Draw rocket fins
     this.ctx.beginPath();
-    this.ctx.moveTo(this.width/4, this.height/3);
+    // Right fin
+    this.ctx.moveTo(this.width/6, this.height/4);
     this.ctx.lineTo(this.width/2, this.height/2);
-    this.ctx.lineTo(this.width/4, this.height/2);
-    this.ctx.moveTo(-this.width/4, this.height/3);
+    this.ctx.lineTo(this.width/6, this.height/2);
+    // Left fin
+    this.ctx.moveTo(-this.width/6, this.height/4);
     this.ctx.lineTo(-this.width/2, this.height/2);
-    this.ctx.lineTo(-this.width/4, this.height/2);
-    this.ctx.fillStyle = '#cc0000';
+    this.ctx.lineTo(-this.width/6, this.height/2);
+    this.ctx.fillStyle = '#cc0033';
     this.ctx.fill();
     
     // Draw rocket window
     this.ctx.beginPath();
-    this.ctx.arc(0, -this.height/6, this.width/6, 0, Math.PI * 2);
+    this.ctx.arc(0, -this.height/6, this.width/5, 0, Math.PI * 2);
     this.ctx.fillStyle = '#00ffff';
     this.ctx.fill();
+    
+    // Add window reflection
+    this.ctx.beginPath();
+    this.ctx.arc(-this.width/12, -this.height/6 - this.width/12, this.width/12, 0, Math.PI * 2);
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    this.ctx.fill();
+    
+    // Draw engine flames
+    if (this.isMovingUp || this.isMovingDown || this.isMovingLeft || this.isMovingRight) {
+      const flameLength = Math.random() * 20 + 20;
+      const flameWidth = this.width/3;
+      
+      // Main flame
+      this.ctx.beginPath();
+      this.ctx.moveTo(-flameWidth/2, this.height/2);
+      this.ctx.lineTo(0, this.height/2 + flameLength);
+      this.ctx.lineTo(flameWidth/2, this.height/2);
+      this.ctx.closePath();
+      const gradient = this.ctx.createLinearGradient(0, this.height/2, 0, this.height/2 + flameLength);
+      gradient.addColorStop(0, '#ff6600');
+      gradient.addColorStop(0.5, '#ffcc00');
+      gradient.addColorStop(1, 'rgba(255, 255, 0, 0)');
+      this.ctx.fillStyle = gradient;
+      this.ctx.fill();
+    }
     
     this.ctx.restore();
   }
@@ -183,6 +225,7 @@ class Asteroid {
     this.radius = Math.random() * 20 + 20;
     this.points = Math.floor(Math.random() * 4) + 8;
     this.vertices = [];
+    this.craters = [];
     this.angle = 0;
     this.rotationSpeed = (Math.random() - 0.5) * 0.05;
     this.speed = Math.random() * 2 + 2;
@@ -221,13 +264,29 @@ class Asteroid {
 
   generateVertices() {
     this.vertices = [];
+    this.craters = [];
+    
+    // Generate main asteroid shape with more variance
     for (let i = 0; i < this.points; i++) {
       const angle = (i / this.points) * Math.PI * 2;
-      const variance = Math.random() * (this.radius * 0.2);
+      const variance = Math.random() * (this.radius * 0.3); // Increased variance
       const r = this.radius + variance;
       this.vertices.push({
         x: Math.cos(angle) * r,
         y: Math.sin(angle) * r
+      });
+    }
+
+    // Generate 2-4 craters
+    const numCraters = Math.floor(Math.random() * 3) + 2;
+    for (let i = 0; i < numCraters; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * (this.radius * 0.7);
+      const craterRadius = Math.random() * (this.radius * 0.3) + (this.radius * 0.1);
+      this.craters.push({
+        x: Math.cos(angle) * distance,
+        y: Math.sin(angle) * distance,
+        radius: craterRadius
       });
     }
   }
@@ -237,13 +296,48 @@ class Asteroid {
     this.ctx.translate(this.x, this.y);
     this.ctx.rotate(this.angle);
     
+    // Create gradient for base asteroid color
+    const gradient = this.ctx.createRadialGradient(0, 0, 0, 0, 0, this.radius);
+    gradient.addColorStop(0, '#8B8B8B');    // Light gray center
+    gradient.addColorStop(0.5, '#696969');  // Medium gray middle
+    gradient.addColorStop(1, '#4A4A4A');    // Dark gray edge
+    
+    // Draw main asteroid body
     this.ctx.beginPath();
     this.ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
     for (let i = 1; i < this.vertices.length; i++) {
       this.ctx.lineTo(this.vertices[i].x, this.vertices[i].y);
     }
     this.ctx.closePath();
-    this.ctx.strokeStyle = '#ffffff';
+    this.ctx.fillStyle = gradient;
+    this.ctx.fill();
+    
+    // Add surface texture
+    this.ctx.strokeStyle = '#3A3A3A';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+    
+    // Draw craters with shadows
+    this.craters.forEach(crater => {
+      // Crater shadow
+      this.ctx.beginPath();
+      this.ctx.arc(crater.x, crater.y, crater.radius, 0, Math.PI * 2);
+      this.ctx.fillStyle = 'rgba(30, 30, 30, 0.6)';
+      this.ctx.fill();
+      
+      // Crater rim highlight
+      this.ctx.beginPath();
+      this.ctx.arc(crater.x - crater.radius * 0.2, crater.y - crater.radius * 0.2, 
+                   crater.radius * 0.9, 0, Math.PI * 2);
+      this.ctx.strokeStyle = 'rgba(180, 180, 180, 0.4)';
+      this.ctx.lineWidth = 2;
+      this.ctx.stroke();
+    });
+    
+    // Add a subtle outer glow
+    this.ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
+    this.ctx.shadowBlur = 10;
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
     this.ctx.lineWidth = 2;
     this.ctx.stroke();
     
@@ -337,10 +431,6 @@ const AsteroidDodger = () => {
         // Check collision
         if (asteroid.checkCollision(rocket)) {
           setGameOver(true);
-          if (score > highScore) {
-            setHighScore(score);
-            localStorage.setItem('asteroidDodgerHighScore', score);
-          }
           return false;
         }
 
@@ -363,6 +453,14 @@ const AsteroidDodger = () => {
       cancelAnimationFrame(animationId);
     };
   }, [gameStarted, gameOver]);
+
+  useEffect(() => {
+    // Update high score whenever the score changes
+    if (score > highScore) {
+      setHighScore(score);
+      localStorage.setItem('asteroidDodgerHighScore', score.toString());
+    }
+  }, [score, highScore]);
 
   const startGame = () => {
     setGameStarted(true);
