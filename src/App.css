@@ -191,10 +191,15 @@ body {
   animation: fadeIn 0.8s ease 0.7s forwards;
 }
 
-.explore-btn {
+.hero-buttons {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.explore-btn, .chatbot-btn {
   padding: 1rem 2.5rem;
   font-size: 1.1rem;
-  background: linear-gradient(45deg, #00ffff, #ff00ff);
   border: none;
   border-radius: 50px;
   color: #ffffff;
@@ -205,8 +210,10 @@ body {
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
   opacity: 0;
+}
+
+.explore-btn {
   animation: fadeIn 0.8s ease 0.9s forwards;
-  background-size: 200% auto;
   background-image: linear-gradient(
     45deg, 
     #00ffff 0%, 
@@ -215,7 +222,57 @@ body {
   );
 }
 
-.explore-btn::before {
+.chatbot-btn {
+  animation: fadeIn 0.8s ease 1.1s forwards;
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+.chatbot-btn::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50px;
+  padding: 2px;
+  background: linear-gradient(
+    45deg, 
+    #00ffff 0%, 
+    #ff00ff 50%, 
+    #00ffff 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  background-size: 200% auto;
+}
+
+.explore-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
+  background-position: right center;
+}
+
+.chatbot-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
+}
+
+.chatbot-btn:hover::after {
+  background-position: right center;
+}
+
+.explore-btn:active, .chatbot-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+}
+
+.explore-btn::before, .chatbot-btn::before {
   content: '';
   position: absolute;
   top: 0;
@@ -231,54 +288,8 @@ body {
   transition: 0.5s;
 }
 
-.explore-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
-  background-position: right center;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
-}
-
-.explore-btn:hover::before {
+.explore-btn:hover::before, .chatbot-btn:hover::before {
   left: 100%;
-}
-
-.hero-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-@keyframes gradientText {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes fadeSlideRight {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 /* 3D Canvas Container Styles */
@@ -406,20 +417,34 @@ canvas {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.chatbot-btn {
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  border: 2px solid #00ffff;
-  background: transparent;
-  color: #00ffff;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
+@keyframes gradientText {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-.chatbot-btn:hover {
-  background: rgba(0, 255, 255, 0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+@keyframes fadeSlideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
