@@ -62,8 +62,9 @@ const ImageSection = styled.div`
 
 const CategoryImage = styled.img`
   width: 100%;
-  height: 300px;
-  object-fit: cover;
+  height: ${props => props.category === 'rockets' ? 'auto' : '300px'};
+  max-height: ${props => props.category === 'rockets' ? 'none' : '300px'};
+  object-fit: ${props => props.category === 'rockets' ? 'contain' : 'cover'};
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 `;
@@ -372,7 +373,11 @@ function CategoryPage() {
           <WelcomeSection isSearching={isSearching}>
             <WelcomeContent>
               <ImageSection>
-                <CategoryImage src={categoryInfo.image} alt={categoryInfo.title} />
+                <CategoryImage 
+                  src={categoryInfo.image} 
+                  alt={categoryInfo.title}
+                  category={category}
+                />
               </ImageSection>
               <InfoSection>
                 <CategoryDescription>
