@@ -184,13 +184,48 @@ const BackButton = styled(motion.button)`
   margin: 1rem 0;
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+`;
+
 const LoadingSpinner = styled(motion.div)`
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  width: 80px;
+  height: 80px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   border-top-color: #00ffff;
   margin: 2rem auto;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 4px solid transparent;
+    border-top-color: #ff00ff;
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+`;
+
+const LoadingText = styled(motion.div)`
+  color: #00ffff;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  text-align: center;
 `;
 
 const Score = styled.div`
@@ -199,6 +234,87 @@ const Score = styled.div`
   color: #00ffff;
   margin: 1rem 0;
 `;
+
+const CelebrationOverlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow: hidden;
+`;
+
+const Popper = styled(motion.div)`
+  position: absolute;
+  font-size: ${props => props.size}px;
+  user-select: none;
+  z-index: 1001;
+`;
+
+const CelebrationMessage = styled(motion.div)`
+  text-align: center;
+  z-index: 1002;
+  background: linear-gradient(135deg, rgba(13, 13, 43, 0.95), rgba(27, 27, 75, 0.95));
+  padding: 3rem;
+  border-radius: 30px;
+  box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  max-width: 600px;
+  width: 90%;
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+  }
+
+  .score {
+    font-size: 2.5rem;
+    color: #00ffff;
+    margin: 1.5rem 0;
+  }
+
+  p {
+    font-size: 1.4rem;
+    color: #fff;
+    margin: 1rem 0;
+  }
+`;
+
+const generatePoppers = () => {
+  const poppers = [];
+  const emojis = ['🎉', '🎊', '⭐', '✨', '🌟', '🚀', '💫'];
+  const count = 30;
+
+  for (let i = 0; i < count; i++) {
+    const startX = Math.random() * window.innerWidth;
+    const startY = window.innerHeight + 50;
+    const endX = startX + (Math.random() - 0.5) * 500;
+    const endY = -50;
+    
+    poppers.push({
+      id: i,
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+      size: Math.random() * 30 + 20,
+      startX,
+      startY,
+      endX,
+      endY,
+      rotation: Math.random() * 720 - 360,
+      delay: Math.random() * 2,
+      duration: Math.random() * 2 + 2
+    });
+  }
+  return poppers;
+};
 
 const difficultyLevels = ['Easy', 'Medium', 'Hard'];
 const domains = [
@@ -221,6 +337,8 @@ const QuizTime = () => {
   const [quizComplete, setQuizComplete] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [poppers, setPoppers] = useState([]);
 
   const handleLevelSelect = (level) => {
     setSelectedLevel(level);
@@ -266,7 +384,9 @@ const QuizTime = () => {
         setShowExplanation(false);
       } else {
         setQuizComplete(true);
-        if (score < 5) {
+        if (score >= 5) {
+          startCelebration();
+        } else {
           setTimeout(() => {
             handleDomainSelect({ ...selectedDomain, name: selectedDomain.name });
           }, 3000);
@@ -291,6 +411,22 @@ const QuizTime = () => {
     setQuizComplete(false);
   };
 
+  const startCelebration = () => {
+    setShowCelebration(true);
+    setPoppers(generatePoppers());
+    
+    // Generate new poppers every 2 seconds for continuous celebration
+    const popperInterval = setInterval(() => {
+      setPoppers(generatePoppers());
+    }, 2000);
+
+    // Stop celebration after 6 seconds
+    setTimeout(() => {
+      clearInterval(popperInterval);
+      setShowCelebration(false);
+    }, 6000);
+  };
+
   return (
     <QuizContainer>
       <StarField />
@@ -305,10 +441,23 @@ const QuizTime = () => {
 
         <AnimatePresence mode="wait">
           {loading && (
-            <LoadingSpinner
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            />
+            <LoadingContainer>
+              <LoadingSpinner
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              />
+              <LoadingText
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                Generating your cosmic quiz questions...
+                <br />
+                <span style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+                  Consulting with the stars 🌟
+                </span>
+              </LoadingText>
+            </LoadingContainer>
           )}
 
           {!selectedLevel && !loading && (
@@ -430,6 +579,59 @@ const QuizTime = () => {
                 </motion.div>
               )}
             </QuizCard>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showCelebration && (
+            <CelebrationOverlay
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {poppers.map((popper) => (
+                <Popper
+                  key={popper.id}
+                  size={popper.size}
+                  initial={{
+                    x: popper.startX,
+                    y: popper.startY,
+                    rotate: 0,
+                    scale: 0
+                  }}
+                  animate={{
+                    x: popper.endX,
+                    y: popper.endY,
+                    rotate: popper.rotation,
+                    scale: [0, 1, 1, 0.5, 0]
+                  }}
+                  transition={{
+                    duration: popper.duration,
+                    delay: popper.delay,
+                    ease: "easeOut"
+                  }}
+                >
+                  {popper.emoji}
+                </Popper>
+              ))}
+              <CelebrationMessage
+                initial={{ scale: 0, y: 100 }}
+                animate={{ scale: 1, y: 0 }}
+                transition={{
+                  type: "spring",
+                  damping: 12,
+                  stiffness: 100,
+                  delay: 0.3
+                }}
+              >
+                <h1>Cosmic Champion! 🏆</h1>
+                <div className="score">
+                  {score} / {questions.length}
+                </div>
+                <p>You've mastered the mysteries of the cosmos! 🌌</p>
+                <p>Your knowledge shines brighter than a supernova! ✨</p>
+              </CelebrationMessage>
+            </CelebrationOverlay>
           )}
         </AnimatePresence>
 
