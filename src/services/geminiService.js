@@ -5,7 +5,9 @@ const generatePrompt = (category, nameQuery, dateQuery) => {
   const categoryContext = {
     satellites: 'Focus on artificial satellites, space stations, and orbital spacecraft.',
     astronauts: 'Focus on astronauts, cosmonauts, and space travelers.',
-    rockets: 'Focus on rockets, launch vehicles, and space propulsion systems.'
+    rockets: 'Focus on rockets, launch vehicles, and space propulsion systems.',
+    historical_astronomy_story: 'Tell me an engaging story about the astronomical discovery or event.',
+    historical_figure_conversation: 'Engage in a conversation about your astronomical discoveries and observations.'
   };
 
   let prompt = `You are a space research expert. I need detailed information about ${category}`;
@@ -21,21 +23,43 @@ const generatePrompt = (category, nameQuery, dateQuery) => {
   // Add category-specific focus without being too restrictive
   prompt += `. ${categoryContext[category] || ''}`;
 
-  prompt += `. Please provide information in the following JSON format:
-  [
-    {
-      "title": "Title of the information",
-      "description": "Detailed description with facts",
-      "date": "Relevant date"
-    }
-  ]
-  Important instructions:
-  1. Return ONLY valid JSON array with 3-5 relevant results
-  2. Include closely related items even if the spelling doesn't match exactly
-  3. For space missions, include launch date, mission details, and achievements
-  4. Sort results by relevance
-  5. Ensure all dates are in YYYY-MM-DD format when possible
-  6. Prioritize results related to ${category}`;
+  if (category === 'historical_astronomy_story') {
+    prompt = `You are a knowledgeable astronomy historian. Tell me an engaging story about "${nameQuery}" from ${dateQuery}. 
+    Focus on the astronomical discoveries, observations, and the historical context of that time period. 
+    Make it educational but engaging, written in a narrative style that captures the wonder of astronomical discovery.
+    Include specific details about:
+    - The astronomical phenomena or discovery
+    - The historical figures involved
+    - The tools and methods used
+    - The impact on our understanding of the universe
+    Keep the response between 200-300 words.`;
+  } else if (category === 'historical_figure_conversation') {
+    prompt = `You are ${nameQuery}, a historical figure from ${dateQuery}. 
+    Engage in a conversation about your astronomical discoveries and observations.
+    Speak in first person, as if you are directly talking to a time traveler who has come to learn from you.
+    Share your thoughts about:
+    - Your most significant discoveries
+    - The challenges you faced
+    - Your methods and instruments
+    - Your vision for the future of astronomy
+    Keep the response between 150-250 words and maintain a conversational tone.`;
+  } else {
+    prompt += `. Please provide information in the following JSON format:
+    [
+      {
+        "title": "Title of the information",
+        "description": "Detailed description with facts",
+        "date": "Relevant date"
+      }
+    ]
+    Important instructions:
+    1. Return ONLY valid JSON array with 3-5 relevant results
+    2. Include closely related items even if the spelling doesn't match exactly
+    3. For space missions, include launch date, mission details, and achievements
+    4. Sort results by relevance
+    5. Ensure all dates are in YYYY-MM-DD format when possible
+    6. Prioritize results related to ${category}`;
+  }
 
   return prompt;
 };
@@ -89,6 +113,13 @@ export const searchWithGemini = async (category, nameQuery, dateQuery) => {
     try {
       const text = data.candidates[0].content.parts[0].text;
       console.log('Extracted text:', text);
+
+      if (category === 'historical_astronomy_story' || category === 'historical_figure_conversation') {
+        return {
+          text: text,
+          success: true
+        };
+      }
 
       const jsonStr = text.replace(/```json|```|\n/g, '').trim();
       console.log('Cleaned JSON string:', jsonStr);

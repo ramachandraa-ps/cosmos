@@ -18,6 +18,7 @@ import ConstellationConnect from './components/games/ConstellationConnect';
 import CosmicArchitect from './components/CosmicArchitect';
 import { useHistoricEvents } from './services/notificationService';
 import AsteroidDodger from './components/games/AsteroidDodger';
+import TimeTraveler from './components/games/TimeTraveler';
 function AstronautModel() {
   const astronautRef = useRef();
   const { scene } = useGLTF("/astronaut_3d/scene.gltf");
@@ -90,6 +91,7 @@ function App() {
           <Route path="/games/constellation-connect" element={<ConstellationConnect />} />
           <Route path="/cosmic-architect" element={<CosmicArchitect />} />
           <Route path="/games/asteroid-dodger" element={<AsteroidDodger />} />
+          <Route path="/games/time-traveler" element={<TimeTraveler />} />
           <Route path="/" element={
             <main className="hero-section">
               <div className="hero-content">
