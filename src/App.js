@@ -15,6 +15,7 @@ import CategoryPage from './components/categories/CategoryPage';
 import NotificationBell from './components/notifications/NotificationBell';
 import Games from './components/Games';
 import ConstellationConnect from './components/games/ConstellationConnect';
+import CosmicArchitect from './components/CosmicArchitect';
 import { useHistoricEvents } from './services/notificationService';
 
 function AstronautModel() {
@@ -46,7 +47,7 @@ function AstronautModel() {
       ref={astronautRef}
       object={scene}
       position={[2, 0, -1]}
-      scale={[1.8, 1.8, 1.8]} // Increased size
+      scale={[1.8, 1.8, 1.8]} 
       rotation={[0, Math.PI / 4, 0]}
     />
   );
@@ -87,6 +88,7 @@ function App() {
           <Route path="/quiz-time" element={<QuizTime />} />
           <Route path="/games" element={<Games />} />
           <Route path="/games/constellation-connect" element={<ConstellationConnect />} />
+          <Route path="/cosmic-architect" element={<CosmicArchitect />} />
           <Route path="/" element={
             <main className="hero-section">
               <div className="hero-content">
