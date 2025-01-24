@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { OrbitControls } from '@react-three/drei';
 
 const Container = styled.div`
   position: fixed;
@@ -16,6 +17,7 @@ const Container = styled.div`
   padding: 1.5rem;
   border: 1px solid rgba(166, 255, 0, 0.1);
   color: white;
+  z-index: 1000;
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -136,18 +138,28 @@ const Button = styled.button`
   }
 `;
 
+const Layout = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+`;
+
 const PreviewContainer = styled.div`
-  position: fixed;
+  position: absolute;
+  left: 280px; 
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  height: 500px;
-  background: rgba(15, 15, 25, 0.3);
-  border-radius: 50%;
-  backdrop-filter: blur(5px);
+  transform: translateY(-50%);
+  width: 500px; 
+  height: 400px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(166, 255, 0, 0.1);
   overflow: hidden;
+  box-shadow: 0 0 20px rgba(166, 255, 0, 0.1);
+  clip-path: inset(0 0 0 0 round 20px);
 `;
 
 const PlanetBuilder = () => {
@@ -162,10 +174,14 @@ const PlanetBuilder = () => {
   });
 
   const handleChange = (e) => {
-    setPlanetData({
-      ...planetData,
-      [e.target.name]: e.target.value
-    });
+    const value = e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
+    setPlanetData(prev => ({
+      ...prev,
+      [e.target.name]: value,
+      // Ensure water and land percentages sum to 100%
+      ...(e.target.name === 'water' ? { land: (100 - value).toString() } : {}),
+      ...(e.target.name === 'land' ? { water: (100 - value).toString() } : {})
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -173,7 +189,28 @@ const PlanetBuilder = () => {
   };
 
   return (
-    <>
+    <Layout>
+      <PreviewContainer>
+        <Canvas 
+          camera={{ position: [0, 0, 3], fov: 45 }}
+          style={{ background: 'transparent' }}
+        >
+          <ambientLight intensity={0.5} />
+          <pointLight position={[10, 10, 10]} />
+          <Planet 
+            key={`${planetData.water}-${planetData.land}-${planetData.temperature}-${planetData.atmosphere}`} 
+            planetData={planetData} 
+          />
+          <OrbitControls 
+            enableZoom={false}
+            minPolarAngle={Math.PI / 4} 
+            maxPolarAngle={Math.PI * 3/4}
+            minAzimuthAngle={-Math.PI / 4} 
+            maxAzimuthAngle={Math.PI / 4}
+          />
+        </Canvas>
+      </PreviewContainer>
+      
       <Container>
         <Title>Planet Builder</Title>
         <Form onSubmit={handleSubmit}>
@@ -275,21 +312,15 @@ const PlanetBuilder = () => {
           <Button type="submit">Create Planet</Button>
         </Form>
       </Container>
-
-      <PreviewContainer>
-        <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
-          <Planet planetData={planetData} />
-        </Canvas>
-      </PreviewContainer>
-    </>
+    </Layout>
   );
 };
 
 // 3D Planet Component
 const Planet = ({ planetData }) => {
   const meshRef = useRef();
+  const maxSize = 1.5; 
+  const actualSize = Math.min(parseFloat(planetData.size), maxSize);
   
   const [planetTexture] = useState(() => {
     const canvas = document.createElement('canvas');
@@ -297,33 +328,30 @@ const Planet = ({ planetData }) => {
     canvas.height = 512;
     const ctx = canvas.getContext('2d');
     
-    // Create base ocean
     const waterPercent = parseFloat(planetData.water);
     const landPercent = parseFloat(planetData.land);
     const temp = parseFloat(planetData.temperature);
     
-    // Create base water color based on temperature
-    let waterColor = temp < 0 ? '#b0bec5' : '#1976d2';
-    ctx.fillStyle = waterColor;
+    // Create base water
+    ctx.fillStyle = temp < 0 ? '#b0bec5' : '#1976d2';  // Ice blue or ocean blue
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Function to create a landmass
-    const createLandmass = (x, y, size, type) => {
-        ctx.beginPath();
-        
-        // Create a more natural shape using multiple circles
+    // Create landmasses based on land percentage
+    const createLandmass = (x, y, size, isMountain = false) => {
         const points = [];
         const segments = 24;
+        
+        // Create natural shape
         for (let i = 0; i < segments; i++) {
             const angle = (i / segments) * Math.PI * 2;
-            const radius = size * (0.7 + Math.random() * 0.6); // More variation
+            const radius = size * (0.7 + Math.random() * 0.6);
             points.push({
                 x: x + Math.cos(angle) * radius,
                 y: y + Math.sin(angle) * radius
             });
         }
         
-        // Draw the shape
+        // Draw shape
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         for (let i = 1; i < points.length; i++) {
@@ -333,32 +361,22 @@ const Planet = ({ planetData }) => {
         }
         ctx.closePath();
         
-        // Color based on type
-        let mainColor;
-        switch(type) {
-            case 'forest':
-                mainColor = '#2e7d32';
-                break;
-            case 'desert':
-                mainColor = '#d7ccc8';
-                break;
-            case 'mountain':
-                mainColor = '#795548';
-                break;
-            default:
-                mainColor = '#4caf50';
+        // Color based on type (land or mountain)
+        if (isMountain) {
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+            gradient.addColorStop(0, '#795548');  // Brown
+            gradient.addColorStop(1, '#5d4037');  // Darker brown
+            ctx.fillStyle = gradient;
+        } else {
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+            gradient.addColorStop(0, '#2e7d32');  // Green
+            gradient.addColorStop(1, '#1b5e20');  // Darker green
+            ctx.fillStyle = gradient;
         }
-        
-        // Create gradient for more natural look
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-        gradient.addColorStop(0, mainColor);
-        gradient.addColorStop(1, shadeColor(mainColor, -20));
-        ctx.fillStyle = gradient;
         ctx.fill();
         
         // Add terrain detail
-        const detailCount = size / 4;
-        for (let i = 0; i < detailCount; i++) {
+        for (let i = 0; i < size/4; i++) {
             const detailX = x + (Math.random() - 0.5) * size * 2;
             const detailY = y + (Math.random() - 0.5) * size * 2;
             const detailSize = 5 + Math.random() * 15;
@@ -370,39 +388,26 @@ const Planet = ({ planetData }) => {
         }
     };
     
-    // Helper function to shade colors
-    function shadeColor(color, percent) {
-        const num = parseInt(color.replace('#', ''), 16);
-        const amt = Math.round(2.55 * percent);
-        const R = (num >> 16) + amt;
-        const G = (num >> 8 & 0x00FF) + amt;
-        const B = (num & 0x0000FF) + amt;
-        return '#' + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
-    }
-    
-    // Calculate number and size of landmasses based on land percentage
+    // Calculate landmass sizes based on land percentage
     const totalLandArea = (canvas.width * canvas.height) * (landPercent / 100);
-    const avgLandmassSize = Math.sqrt(totalLandArea / 5); // Divide into ~5 landmasses
-    const numLandmasses = Math.max(1, Math.floor(landPercent / 15)); // At least 1 landmass
+    const numLandmasses = Math.max(2, Math.floor(landPercent / 20));
+    const avgLandmassSize = Math.sqrt(totalLandArea / numLandmasses);
     
-    // Create landmasses
+    // Create green landmasses
     for (let i = 0; i < numLandmasses; i++) {
         const x = Math.random() * canvas.width;
-        const y = (canvas.height * 0.3) + Math.random() * (canvas.height * 0.4); // Keep away from poles
+        const y = (canvas.height * 0.2) + Math.random() * (canvas.height * 0.6); // Keep away from poles
         const size = avgLandmassSize * (0.7 + Math.random() * 0.6);
-        
-        // Determine terrain type
-        let type;
-        if (temp > 40) {
-            type = Math.random() > 0.3 ? 'desert' : 'mountain';
-        } else if (temp < 0) {
-            type = Math.random() > 0.7 ? 'mountain' : 'forest';
-        } else {
-            type = Math.random() > 0.6 ? 'forest' : 
-                   Math.random() > 0.5 ? 'mountain' : 'desert';
-        }
-        
-        createLandmass(x, y, size, type);
+        createLandmass(x, y, size, false);  // false = green land
+    }
+    
+    // Add just a few brown mountain ranges (10-20% of land features)
+    const numMountains = Math.max(1, Math.floor(numLandmasses * 0.15));
+    for (let i = 0; i < numMountains; i++) {
+        const x = Math.random() * canvas.width;
+        const y = (canvas.height * 0.3) + Math.random() * (canvas.height * 0.4);
+        const size = avgLandmassSize * 0.4; // Mountains are smaller
+        createLandmass(x, y, size, true);  // true = brown mountains
     }
     
     // Add ice caps if cold
@@ -415,13 +420,13 @@ const Planet = ({ planetData }) => {
         ctx.fill();
     }
     
-    // Add clouds based on atmosphere
+    // Add clouds
     if (planetData.atmosphere !== 'none') {
         const cloudOpacity = planetData.atmosphere === 'thick' ? 0.4 : 0.2;
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 20; i++) {
             const x = Math.random() * canvas.width;
             const y = Math.random() * canvas.height;
-            const size = 20 + Math.random() * 60;
+            const size = 20 + Math.random() * 40;
             
             const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
             gradient.addColorStop(0, `rgba(255,255,255,${cloudOpacity})`);
@@ -460,10 +465,10 @@ const Planet = ({ planetData }) => {
   };
 
   return (
-    <group>
+    <group scale={[actualSize, actualSize, actualSize]}>
       {/* Atmosphere glow */}
       <mesh scale={[1.2, 1.2, 1.2]}>
-        <sphereGeometry args={[planetData.size * 2, 32, 32]} />
+        <sphereGeometry args={[1, 32, 32]} />
         <meshBasicMaterial
           color={getAtmosphereColor()}
           transparent
@@ -472,7 +477,7 @@ const Planet = ({ planetData }) => {
       </mesh>
       
       {/* Planet surface */}
-      <mesh ref={meshRef} scale={[planetData.size * 2, planetData.size * 2, planetData.size * 2]}>
+      <mesh ref={meshRef}>
         <sphereGeometry args={[1, 64, 64]} />
         <meshStandardMaterial
           map={planetTexture}
@@ -485,7 +490,7 @@ const Planet = ({ planetData }) => {
 
       {/* Cloud layer */}
       {(planetData.atmosphere === 'earth-like' || planetData.atmosphere === 'thick') && (
-        <mesh scale={[1.02, 1.02, 1.02].map(s => s * planetData.size * 2)}>
+        <mesh scale={[1.02, 1.02, 1.02]}>
           <sphereGeometry args={[1, 64, 64]} />
           <meshBasicMaterial
             color="#ffffff"
