@@ -298,105 +298,136 @@ const Planet = ({ planetData }) => {
     const ctx = canvas.getContext('2d');
     
     // Create base ocean
-    ctx.fillStyle = '#1976d2';
+    const waterPercent = parseFloat(planetData.water);
+    const landPercent = parseFloat(planetData.land);
+    const temp = parseFloat(planetData.temperature);
+    
+    // Create base water color based on temperature
+    let waterColor = temp < 0 ? '#b0bec5' : '#1976d2';
+    ctx.fillStyle = waterColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Generate continents using noise
-    const createContinent = (centerX, centerY, size, type) => {
+    // Function to create a landmass
+    const createLandmass = (x, y, size, type) => {
+        ctx.beginPath();
+        
+        // Create a more natural shape using multiple circles
         const points = [];
         const segments = 24;
-        
-        // Create random continent shape
         for (let i = 0; i < segments; i++) {
             const angle = (i / segments) * Math.PI * 2;
-            const radius = size * (0.8 + Math.random() * 0.4);
+            const radius = size * (0.7 + Math.random() * 0.6); // More variation
             points.push({
-                x: centerX + Math.cos(angle) * radius,
-                y: centerY + Math.sin(angle) * radius
+                x: x + Math.cos(angle) * radius,
+                y: y + Math.sin(angle) * radius
             });
         }
         
-        // Draw continent
+        // Draw the shape
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
-        points.forEach(point => ctx.lineTo(point.x, point.y));
-        points.push(points[0]); // Close the shape
+        for (let i = 1; i < points.length; i++) {
+            const xc = (points[i].x + points[i - 1].x) / 2;
+            const yc = (points[i].y + points[i - 1].y) / 2;
+            ctx.quadraticCurveTo(points[i - 1].x, points[i - 1].y, xc, yc);
+        }
+        ctx.closePath();
         
-        // Set color based on type
+        // Color based on type
+        let mainColor;
         switch(type) {
-            case 'desert':
-                ctx.fillStyle = '#ffd54f';
-                break;
             case 'forest':
-                ctx.fillStyle = '#2e7d32';
+                mainColor = '#2e7d32';
                 break;
-            case 'tundra':
-                ctx.fillStyle = '#cfd8dc';
+            case 'desert':
+                mainColor = '#d7ccc8';
+                break;
+            case 'mountain':
+                mainColor = '#795548';
                 break;
             default:
-                ctx.fillStyle = '#4caf50';
+                mainColor = '#4caf50';
         }
         
-        ctx.closePath();
+        // Create gradient for more natural look
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+        gradient.addColorStop(0, mainColor);
+        gradient.addColorStop(1, shadeColor(mainColor, -20));
+        ctx.fillStyle = gradient;
         ctx.fill();
         
         // Add terrain detail
-        for (let i = 0; i < size/2; i++) {
-            const x = centerX + (Math.random() - 0.5) * size * 2;
-            const y = centerY + (Math.random() - 0.5) * size * 2;
-            const gradientSize = 10 + Math.random() * 20;
+        const detailCount = size / 4;
+        for (let i = 0; i < detailCount; i++) {
+            const detailX = x + (Math.random() - 0.5) * size * 2;
+            const detailY = y + (Math.random() - 0.5) * size * 2;
+            const detailSize = 5 + Math.random() * 15;
             
-            const gradient = ctx.createRadialGradient(x, y, 0, x, y, gradientSize);
-            gradient.addColorStop(0, 'rgba(0,0,0,0.2)');
-            gradient.addColorStop(1, 'rgba(0,0,0,0)');
-            
-            ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(x, y, gradientSize, 0, Math.PI * 2);
+            ctx.arc(detailX, detailY, detailSize, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(0,0,0,${0.1 + Math.random() * 0.1})`;
             ctx.fill();
         }
     };
     
-    // Create several continents based on temperature and land percentage
-    const temp = parseFloat(planetData.temperature);
-    const land = parseFloat(planetData.land);
-    const numContinents = Math.floor(3 + (land / 20)); // More land = more continents
+    // Helper function to shade colors
+    function shadeColor(color, percent) {
+        const num = parseInt(color.replace('#', ''), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = (num >> 16) + amt;
+        const G = (num >> 8 & 0x00FF) + amt;
+        const B = (num & 0x0000FF) + amt;
+        return '#' + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+    }
     
-    for (let i = 0; i < numContinents; i++) {
+    // Calculate number and size of landmasses based on land percentage
+    const totalLandArea = (canvas.width * canvas.height) * (landPercent / 100);
+    const avgLandmassSize = Math.sqrt(totalLandArea / 5); // Divide into ~5 landmasses
+    const numLandmasses = Math.max(1, Math.floor(landPercent / 15)); // At least 1 landmass
+    
+    // Create landmasses
+    for (let i = 0; i < numLandmasses; i++) {
         const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        const size = 50 + Math.random() * 100;
+        const y = (canvas.height * 0.3) + Math.random() * (canvas.height * 0.4); // Keep away from poles
+        const size = avgLandmassSize * (0.7 + Math.random() * 0.6);
         
-        // Determine continent type based on temperature and position
+        // Determine terrain type
         let type;
         if (temp > 40) {
-            type = 'desert';
+            type = Math.random() > 0.3 ? 'desert' : 'mountain';
         } else if (temp < 0) {
-            type = 'tundra';
+            type = Math.random() > 0.7 ? 'mountain' : 'forest';
         } else {
-            type = Math.random() > 0.5 ? 'forest' : 'grassland';
+            type = Math.random() > 0.6 ? 'forest' : 
+                   Math.random() > 0.5 ? 'mountain' : 'desert';
         }
         
-        createContinent(x, y, size, type);
+        createLandmass(x, y, size, type);
     }
     
     // Add ice caps if cold
     if (temp < 10) {
+        const iceCap = Math.max(0.1, Math.min(0.3, (10 - temp) / 30));
         ctx.fillStyle = '#eceff1';
         ctx.beginPath();
-        ctx.rect(0, 0, canvas.width, canvas.height * 0.15);
-        ctx.rect(0, canvas.height * 0.85, canvas.width, canvas.height * 0.15);
+        ctx.rect(0, 0, canvas.width, canvas.height * iceCap);
+        ctx.rect(0, canvas.height * (1 - iceCap), canvas.width, canvas.height * iceCap);
         ctx.fill();
     }
     
-    // Add some clouds
-    if (planetData.atmosphere === 'earth-like' || planetData.atmosphere === 'thick') {
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        for (let i = 0; i < 20; i++) {
+    // Add clouds based on atmosphere
+    if (planetData.atmosphere !== 'none') {
+        const cloudOpacity = planetData.atmosphere === 'thick' ? 0.4 : 0.2;
+        for (let i = 0; i < 30; i++) {
             const x = Math.random() * canvas.width;
             const y = Math.random() * canvas.height;
-            const size = 20 + Math.random() * 40;
+            const size = 20 + Math.random() * 60;
             
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+            gradient.addColorStop(0, `rgba(255,255,255,${cloudOpacity})`);
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            
+            ctx.fillStyle = gradient;
             ctx.beginPath();
             ctx.arc(x, y, size, 0, Math.PI * 2);
             ctx.fill();
@@ -405,7 +436,7 @@ const Planet = ({ planetData }) => {
     
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
     return texture;
 });
 
