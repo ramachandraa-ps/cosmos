@@ -278,6 +278,54 @@ const PreviewContainer = styled.div`
   z-index: 2;
 `;
 
+const SuccessMessage = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 1px solid rgba(166, 255, 0, 0.3);
+  color: white;
+  text-align: center;
+  z-index: 100;
+  max-width: 500px;
+  width: 90%;
+`;
+
+const SuccessTitle = styled.h2`
+  background: linear-gradient(45deg, #00aeff, #a6ff00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+`;
+
+const SuccessDescription = styled.p`
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  opacity: 0.9;
+`;
+
+const AnalyzeButton = styled.button`
+  background: linear-gradient(45deg, #00aeff, #a6ff00);
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(166, 255, 0, 0.3);
+  }
+`;
+
 const PlanetBuilder = () => {
   const [mode, setMode] = useState('planet'); // 'planet' or 'system'
   const [planetData, setPlanetData] = useState({
@@ -297,6 +345,7 @@ const PlanetBuilder = () => {
   });
   
   const [showCongrats, setShowCongrats] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleChange = (e) => {
     const value = e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
@@ -342,6 +391,15 @@ const PlanetBuilder = () => {
     if (t < 30) return 'moderate';
     if (t < 50) return 'hot';
     return 'extremely hot';
+  };
+
+  const handleCreatePlanet = () => {
+    if (!planetData.name.trim()) {
+      alert('Please enter a name for your planet');
+      return;
+    }
+
+    setShowSuccess(true);
   };
 
   return (
@@ -474,6 +532,9 @@ const PlanetBuilder = () => {
             <Button type="submit" disabled={!planetData.name.trim()}>
               Create Planet
             </Button>
+            <Button onClick={handleCreatePlanet}>
+              Create Planet and Analyze Habitability
+            </Button>
           </Form>
         ) : (
           <Form onSubmit={handleSystemSubmit}>
@@ -545,6 +606,20 @@ const PlanetBuilder = () => {
             </CloseButton>
           </CongratsCard>
         </CongratsOverlay>
+      )}
+
+      {showSuccess && (
+        <SuccessMessage>
+          <SuccessTitle>Congratulations!</SuccessTitle>
+          <SuccessDescription>
+            You've successfully created {planetData.name}! Your planet features an {planetData.atmosphere} atmosphere,
+            {planetData.water}% water coverage, and gravity {planetData.gravity} times that of Earth.
+            Let's analyze its potential for supporting life!
+          </SuccessDescription>
+          <AnalyzeButton>
+            Check {planetData.name}'s Habitability Potential
+          </AnalyzeButton>
+        </SuccessMessage>
       )}
     </>
   );
