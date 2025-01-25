@@ -14,7 +14,7 @@ const Container = styled.div`
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 1.5rem;
-  border: 1px solid rgba(166, 255, 0, 0.1);
+  border: 1px solid rgba(0, 174, 255, 0.1);
   color: white;
   max-height: 80vh;
   overflow-y: auto;
@@ -28,7 +28,7 @@ const Container = styled.div`
     border-radius: 4px;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(166, 255, 0, 0.3);
+    background: rgba(0, 174, 255, 0.3);
     border-radius: 4px;
   }
 `;
@@ -42,7 +42,7 @@ const VisualizationCard = styled.div`
   background: rgba(15, 15, 25, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 15px;
-  border: 1px solid rgba(166, 255, 0, 0.1);
+  border: 1px solid rgba(0, 174, 255, 0.1);
   overflow: hidden;
   z-index: 2;
 `;
@@ -54,7 +54,7 @@ const ControlGroup = styled.div`
 const Label = styled.label`
   display: block;
   margin-bottom: 0.5rem;
-  color: #a6ff00;
+  color: #00aeff;
 `;
 
 const Slider = styled.input`
@@ -64,12 +64,12 @@ const Slider = styled.input`
 
 const Value = styled.span`
   float: right;
-  color: #a6ff00;
+  color: #00aeff;
 `;
 
 const Title = styled.h2`
   font-size: 1.5rem;
-  background: linear-gradient(45deg, #00aeff, #a6ff00);
+  background: linear-gradient(45deg, #00aeff, #00ffff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1.5rem;
@@ -89,7 +89,7 @@ const FormGroup = styled.div`
 
 const Input = styled.input`
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(166, 255, 0, 0.3);
+  border: 1px solid rgba(0, 174, 255, 0.3);
   border-radius: 5px;
   padding: 0.5rem;
   color: white;
@@ -97,7 +97,7 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #a6ff00;
+    border-color: #00aeff;
   }
 
   &[type="range"] {
@@ -105,7 +105,7 @@ const Input = styled.input`
     width: 100%;
     height: 5px;
     border-radius: 5px;
-    background: rgba(166, 255, 0, 0.1);
+    background: rgba(0, 174, 255, 0.1);
     outline: none;
     
     &::-webkit-slider-thumb {
@@ -113,7 +113,7 @@ const Input = styled.input`
       width: 15px;
       height: 15px;
       border-radius: 50%;
-      background: #a6ff00;
+      background: #00aeff;
       cursor: pointer;
       transition: all 0.3s ease;
       
@@ -126,7 +126,7 @@ const Input = styled.input`
 
 const Select = styled.select`
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(166, 255, 0, 0.3);
+  border: 1px solid rgba(0, 174, 255, 0.3);
   border-radius: 5px;
   padding: 0.5rem;
   color: white;
@@ -140,7 +140,7 @@ const Select = styled.select`
 const Button = styled.button`
   background: ${props => props.disabled ? 
     'rgba(128, 128, 128, 0.3)' : 
-    'linear-gradient(45deg, #00aeff, #a6ff00)'};
+    'linear-gradient(45deg, #00aeff, #00ffff)'};
   color: white;
   padding: 12px 24px;
   border: none;
@@ -153,7 +153,7 @@ const Button = styled.button`
 
   &:hover {
     transform: ${props => props.disabled ? 'none' : 'translateY(-2px)'};
-    box-shadow: ${props => props.disabled ? 'none' : '0 5px 15px rgba(166, 255, 0, 0.2)'};
+    box-shadow: ${props => props.disabled ? 'none' : '0 5px 15px rgba(0, 174, 255, 0.2)'};
   }
 `;
 
@@ -182,7 +182,7 @@ const CongratsCard = styled.div`
   border-radius: 20px;
   padding: 2rem;
   max-width: 600px;
-  border: 1px solid rgba(166, 255, 0, 0.2);
+  border: 1px solid rgba(0, 174, 255, 0.2);
   text-align: center;
   animation: slideUp 0.5s ease;
 
@@ -192,7 +192,7 @@ const CongratsCard = styled.div`
   }
 
   h2 {
-    background: linear-gradient(45deg, #00aeff, #a6ff00);
+    background: linear-gradient(45deg, #00aeff, #00ffff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 1rem;
@@ -244,11 +244,11 @@ const CreationOptions = styled.div`
 
 const OptionButton = styled.button`
   background: ${props => props.active ? 
-    'linear-gradient(45deg, #00aeff, #a6ff00)' : 
+    'linear-gradient(45deg, #00aeff, #00ffff)' : 
     'rgba(15, 15, 25, 0.95)'};
   color: white;
   padding: 12px 24px;
-  border: 1px solid rgba(166, 255, 0, 0.2);
+  border: 1px solid rgba(0, 174, 255, 0.2);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -256,7 +256,7 @@ const OptionButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(166, 255, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 174, 255, 0.2);
   }
 `;
 
@@ -271,9 +271,9 @@ const PreviewContainer = styled.div`
   background: rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(166, 255, 0, 0.1);
+  border: 1px solid rgba(0, 174, 255, 0.1);
   overflow: hidden;
-  box-shadow: 0 0 20px rgba(166, 255, 0, 0.1);
+  box-shadow: 0 0 20px rgba(0, 174, 255, 0.1);
   clip-path: inset(0 0 0 0 round 20px);
   z-index: 2;
 `;

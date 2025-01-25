@@ -1,3 +1,83 @@
+.cosmic-architect-container {
+  background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
+  min-height: 100vh;
+  color: #ffffff;
+  padding: 6rem 2rem 2rem 2rem;
+}
+
+.cosmic-title {
+  font-size: 2.8rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.cosmic-subtitle {
+  text-align: center;
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+  opacity: 0.8;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.interaction-zone {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border-radius: 40px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease-in-out;
+}
+
+.interaction-zone:hover {
+  transform: translateY(-10px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.interaction-zone h2 {
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.interaction-zone h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  opacity: 0.5;
+}
+
+.interaction-zone p {
+  color: #ffffff;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
 .congrats-overlay {
   position: fixed;
   top: 0;
@@ -14,7 +94,7 @@
 
 .congrats-card {
   background: rgba(15, 15, 25, 0.95);
-  border: 1px solid rgba(166, 255, 0, 0.3);
+  border: 1px solid rgba(0, 174, 255, 0.3);
   border-radius: 15px;
   padding: 2rem;
   text-align: center;
@@ -24,7 +104,7 @@
 }
 
 .congrats-card h2 {
-  background: linear-gradient(45deg, #00aeff, #a6ff00);
+  background: linear-gradient(45deg, #00aeff, #00ffff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1rem;

@@ -11,7 +11,7 @@ import rocketImg from '../../assets/rocket.jpg';
 const Container = styled.div`
   padding: 2rem;
   min-height: 100vh;
-  background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+  background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
   color: white;
   padding-top: 120px;
 `;
@@ -23,11 +23,18 @@ const WelcomeSection = styled.div`
   transition: opacity 0.3s ease;
   height: ${props => props.isSearching ? '0' : 'auto'};
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  backdrop-filter: blur(20px);
+  border-radius: 40px;
   padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 174, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
 `;
 
 const WelcomeContent = styled.div`
@@ -82,7 +89,7 @@ const CategoryDescription = styled.div`
   h2 {
     font-size: 1.6rem;
     margin-bottom: 1.2rem;
-    background: linear-gradient(45deg, #00aeff, #a6ff00);
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -109,7 +116,7 @@ const CategoryDescription = styled.div`
       content: '•';
       position: absolute;
       left: 0;
-      color: #a6ff00;
+      color: #00ffff;
     }
   }
 `;
@@ -121,6 +128,37 @@ const SearchContainer = styled.div`
   margin: 3rem auto;
   flex-wrap: wrap;
   padding: 0 1rem;
+`;
+
+const SearchInput = styled.input`
+  flex: 1;
+  min-width: 250px;
+  padding: 1rem;
+  border: none;
+  border-radius: 40px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  color: white;
+  font-size: 1rem;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 174, 255, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
+
+  &:focus {
+    outline: none;
+    border-color: rgba(0, 174, 255, 0.4);
+    box-shadow: 0 0 15px rgba(0, 174, 255, 0.2);
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
 `;
 
 const ResultsGrid = styled.div`
@@ -190,15 +228,15 @@ const Message = styled.div`
 `;
 
 const CategoryTitle = styled.h1`
+  font-size: 2.8rem;
   text-align: center;
-  margin-bottom: 3rem;
-  font-size: 2.5rem;
-  background: linear-gradient(45deg, #00aeff, #a6ff00);
+  margin-bottom: 2rem;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 30px rgba(166, 255, 0, 0.3);
-  position: relative;
-  z-index: 1;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 `;
 
 const ContentWrapper = styled.div`
@@ -211,28 +249,8 @@ const ContentWrapper = styled.div`
     left: 0;
     right: 0;
     height: 100px;
-    background: linear-gradient(to bottom, #0f0c29, transparent);
+    background: linear-gradient(to bottom, #0B0B2B, transparent);
     z-index: -1;
-  }
-`;
-
-const SearchInput = styled.input`
-  flex: 1;
-  min-width: 250px;
-  padding: 1rem;
-  border: none;
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  font-size: 1.1rem;
-  
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
   }
 `;
 

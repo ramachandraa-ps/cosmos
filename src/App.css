@@ -52,20 +52,42 @@ body {
   font-size: 1rem;
   transition: all 0.3s ease;
   position: relative;
+  padding: 0.5rem 1rem;
 }
 
 .nav-link:hover {
-  color: #a6ff00;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transform: translateY(-2px);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 /* Special styling for Cosmic Architect link */
 .special-link {
-  background: linear-gradient(45deg, #00aeff, #a6ff00);
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
   padding: 0.5rem 1rem;
-  border: 1px solid transparent;
+  border: 1px solid rgba(0, 255, 255, 0.3);
   border-radius: 20px;
   position: relative;
   overflow: hidden;
@@ -78,7 +100,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(166, 255, 0, 0.1);
+  background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
   border-radius: 20px;
   transform: scaleX(0);
   transform-origin: right;

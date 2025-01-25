@@ -20,15 +20,15 @@ const floatAnimation = keyframes`
 `;
 
 const glowAnimation = keyframes`
-  0% { box-shadow: 0 0 5px rgba(166, 255, 0, 0.5); }
-  50% { box-shadow: 0 0 20px rgba(166, 255, 0, 0.8); }
-  100% { box-shadow: 0 0 5px rgba(166, 255, 0, 0.5); }
+  0% { box-shadow: 0 0 5px rgba(0, 174, 255, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(0, 174, 255, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(0, 174, 255, 0.5); }
 `;
 
 const Container = styled.div`
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+  background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
   color: white;
   position: relative;
   overflow: hidden;
@@ -44,7 +44,7 @@ const Header = styled.div`
 
 const Title = styled.h1`
   font-size: 2.5rem;
-  background: linear-gradient(45deg, #00aeff, #a6ff00);
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1rem;
@@ -65,18 +65,21 @@ const ControlPanel = styled.div`
   width: 300px;
   min-height: calc(100vh - 140px);
   background: rgba(15, 15, 25, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
+  backdrop-filter: blur(20px);
+  border-radius: 40px;
   padding: 1.5rem;
-  border: 1px solid rgba(166, 255, 0, 0.1);
+  border: 1px solid rgba(0, 174, 255, 0.1);
   z-index: 100;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
 `;
 
 const ToolSection = styled.div`
-  border-bottom: 1px solid rgba(166, 255, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 174, 255, 0.1);
   padding-bottom: 1rem;
   &:last-child {
     border-bottom: none;
@@ -84,60 +87,46 @@ const ToolSection = styled.div`
 `;
 
 const SectionTitle = styled.h3`
-  color: #a6ff00;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 1rem;
-  opacity: 0.8;
 `;
 
 const ToolButton = styled.button`
   width: 100%;
   padding: 1rem;
   margin: 0.5rem 0;
-  background: rgba(166, 255, 0, 0.1);
-  border: 1px solid rgba(166, 255, 0, 0.3);
-  border-radius: 8px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border: 1px solid rgba(0, 174, 255, 0.2);
+  border-radius: 40px;
   color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-
-  ${props => props.active && css`
-    animation: ${pulseAnimation} 2s infinite ease-in-out,
-              ${glowAnimation} 2s infinite ease-in-out;
-    background: rgba(166, 255, 0, 0.2);
-  `}
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
 
   &:hover {
-    background: rgba(166, 255, 0, 0.2);
-    transform: translateX(5px);
+    transform: translateY(-5px);
+    border-color: rgba(0, 174, 255, 0.4);
+    box-shadow: 0 5px 15px rgba(0, 174, 255, 0.2);
   }
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      120deg,
-      transparent,
-      rgba(166, 255, 0, 0.2),
-      transparent
-    );
-    transition: 0.5s;
-  }
-
-  &:hover::before {
-    left: 100%;
+  img {
+    width: 24px;
+    height: 24px;
   }
 `;
 
@@ -172,6 +161,59 @@ const CanvasContainer = styled.div`
 const ContentOverlay = styled.div`
   position: relative;
   z-index: 2;
+`;
+
+const ToolCard = styled.div`
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border-radius: 40px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 174, 255, 0.1);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
+
+  &:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 174, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 174, 255, 0.2);
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 1rem;
+  }
+`;
+
+const CategoryTitle = styled.h2`
+  font-size: 1.2rem;
+  margin: 2rem 0 1rem;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 `;
 
 function CosmicArchitect() {
@@ -248,59 +290,53 @@ function CosmicArchitect() {
 
         <ControlPanel>
           <ToolSection>
-            <SectionTitle>Creation Tools</SectionTitle>
+            <CategoryTitle>Creation Tools</CategoryTitle>
             {tools
               .filter(tool => tool.section === 'creation')
               .map(tool => (
-                <ToolButton
+                <ToolCard
                   key={tool.id}
                   active={activeView === tool.id}
                   onClick={() => setActiveView(tool.id)}
                 >
-                  <ToolIcon>{tool.icon}</ToolIcon>
-                  <ToolInfo>
-                    <ToolName>{tool.name}</ToolName>
-                    <ToolDescription>{tool.description}</ToolDescription>
-                  </ToolInfo>
-                </ToolButton>
+                  <div className="icon">{tool.icon}</div>
+                  <h3>{tool.name}</h3>
+                  <p>{tool.description}</p>
+                </ToolCard>
               ))}
           </ToolSection>
 
           <ToolSection>
-            <SectionTitle>Analysis Tools</SectionTitle>
+            <CategoryTitle>Analysis Tools</CategoryTitle>
             {tools
               .filter(tool => tool.section === 'analysis')
               .map(tool => (
-                <ToolButton
+                <ToolCard
                   key={tool.id}
                   active={activeView === tool.id}
                   onClick={() => setActiveView(tool.id)}
                 >
-                  <ToolIcon>{tool.icon}</ToolIcon>
-                  <ToolInfo>
-                    <ToolName>{tool.name}</ToolName>
-                    <ToolDescription>{tool.description}</ToolDescription>
-                  </ToolInfo>
-                </ToolButton>
+                  <div className="icon">{tool.icon}</div>
+                  <h3>{tool.name}</h3>
+                  <p>{tool.description}</p>
+                </ToolCard>
               ))}
           </ToolSection>
 
           <ToolSection>
-            <SectionTitle>Simulation Tools</SectionTitle>
+            <CategoryTitle>Simulation Tools</CategoryTitle>
             {tools
               .filter(tool => tool.section === 'simulation')
               .map(tool => (
-                <ToolButton
+                <ToolCard
                   key={tool.id}
                   active={activeView === tool.id}
                   onClick={() => setActiveView(tool.id)}
                 >
-                  <ToolIcon>{tool.icon}</ToolIcon>
-                  <ToolInfo>
-                    <ToolName>{tool.name}</ToolName>
-                    <ToolDescription>{tool.description}</ToolDescription>
-                  </ToolInfo>
-                </ToolButton>
+                  <div className="icon">{tool.icon}</div>
+                  <h3>{tool.name}</h3>
+                  <p>{tool.description}</p>
+                </ToolCard>
               ))}
           </ToolSection>
         </ControlPanel>
