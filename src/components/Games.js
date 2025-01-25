@@ -102,13 +102,13 @@ const Games = () => {
     },
     {
       title: 'Asteroid Dodger',
-      image: '/interaction/asteroid-dodger.jpg',
+      image: '/interaction/asteroid_dodge.jpg',
       description: 'Navigate your spacecraft through dangerous asteroid fields. Test your reflexes and survival skills in this arcade-style space adventure!',
       path: '/games/asteroid-dodger'
     },
     {
       title: 'Time Traveler\'s Space Log',
-      image: '/interaction/time-traveler.jpg',
+      image: '/interaction/paradox.jpg',
       description: 'Journey through the history of space exploration! Meet famous astronomers, solve mysteries, and document your discoveries in this interactive adventure.',
       path: '/games/time-traveler'
     }
