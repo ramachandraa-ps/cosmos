@@ -789,4 +789,5 @@ const SolarSystem = ({ systemData }) => {
   );
 };
 
+export { Planet };
 export default PlanetBuilder;

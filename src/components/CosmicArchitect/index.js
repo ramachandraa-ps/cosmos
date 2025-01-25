@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { Stars, OrbitControls } from '@react-three/drei';
 import PlanetBuilder from './PlanetBuilder';
 import SolarSystemDesigner from './SolarSystemDesigner';
+import HabitabilityAnalyzer from './HabitabilityAnalyzer';
 
 const pulseAnimation = keyframes`
   0% { transform: scale(1); }
@@ -191,17 +192,26 @@ function CosmicArchitect() {
       name: 'Solar System Designer',
       description: 'Design complete solar systems',
       section: 'creation'
+    },
+    {
+      id: 'habitability',
+      icon: '🌱',
+      name: 'Habitability Analyzer',
+      description: 'Analyze life-sustaining potential',
+      section: 'analysis'
     }
   ];
 
   const renderActiveView = () => {
     switch(activeView) {
       case 'planetBuilder':
-        return <PlanetBuilder />;
+        return <PlanetBuilder onPlanetCreate={setPlanetData} />;
       case 'solarSystem':
-        return <SolarSystemDesigner />;
+        return <SolarSystemDesigner onSystemCreate={setSolarSystemData} />;
+      case 'habitability':
+        return <HabitabilityAnalyzer planetData={planetData} />;
       default:
-        return <PlanetBuilder />;
+        return <PlanetBuilder onPlanetCreate={setPlanetData} />;
     }
   };
 
@@ -229,19 +239,40 @@ function CosmicArchitect() {
         <ControlPanel>
           <ToolSection>
             <SectionTitle>Creation Tools</SectionTitle>
-            {tools.map(tool => (
-              <ToolButton
-                key={tool.id}
-                active={activeView === tool.id}
-                onClick={() => setActiveView(tool.id)}
-              >
-                <ToolIcon>{tool.icon}</ToolIcon>
-                <ToolInfo>
-                  <ToolName>{tool.name}</ToolName>
-                  <ToolDescription>{tool.description}</ToolDescription>
-                </ToolInfo>
-              </ToolButton>
-            ))}
+            {tools
+              .filter(tool => tool.section === 'creation')
+              .map(tool => (
+                <ToolButton
+                  key={tool.id}
+                  active={activeView === tool.id}
+                  onClick={() => setActiveView(tool.id)}
+                >
+                  <ToolIcon>{tool.icon}</ToolIcon>
+                  <ToolInfo>
+                    <ToolName>{tool.name}</ToolName>
+                    <ToolDescription>{tool.description}</ToolDescription>
+                  </ToolInfo>
+                </ToolButton>
+              ))}
+          </ToolSection>
+
+          <ToolSection>
+            <SectionTitle>Analysis Tools</SectionTitle>
+            {tools
+              .filter(tool => tool.section === 'analysis')
+              .map(tool => (
+                <ToolButton
+                  key={tool.id}
+                  active={activeView === tool.id}
+                  onClick={() => setActiveView(tool.id)}
+                >
+                  <ToolIcon>{tool.icon}</ToolIcon>
+                  <ToolInfo>
+                    <ToolName>{tool.name}</ToolName>
+                    <ToolDescription>{tool.description}</ToolDescription>
+                  </ToolInfo>
+                </ToolButton>
+              ))}
           </ToolSection>
         </ControlPanel>
 
