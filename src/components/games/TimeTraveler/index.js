@@ -9,7 +9,7 @@ import { timelineEvents } from './data/events';
 const GameContainer = styled.div`
   background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
   min-height: 100vh;
-  padding: 2rem;
+  padding: 6rem 2rem 2rem 2rem;
   color: white;
 `;
 
@@ -19,6 +19,7 @@ const InterfaceContainer = styled.div`
   gap: 2rem;
   max-width: 1600px;
   margin: 0 auto;
+  padding-top: 2rem;
 `;
 
 const TimeTraveler = () => {

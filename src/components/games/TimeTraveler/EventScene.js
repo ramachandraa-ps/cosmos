@@ -13,6 +13,10 @@ const SceneContainer = styled.div`
   background-size: cover;
   background-position: center;
   color: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.1);
   
   &:before {
     content: '';
@@ -22,35 +26,42 @@ const SceneContainer = styled.div`
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
     z-index: 0;
   }
 `;
 
 const SceneTitle = styled.h2`
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
   color: #fff;
   text-align: center;
   position: relative;
   z-index: 1;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
 `;
 
 const SceneDescription = styled.p`
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  line-height: 1.6;
   margin-bottom: 2rem;
   color: #ddd;
   position: relative;
   z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
 const StoryContainer = styled.div`
   background: rgba(0, 0, 0, 0.7);
   border-radius: 15px;
-  padding: 1.5rem;
-  margin: 1rem 0;
+  padding: 2rem;
+  margin: 1.5rem 0;
   border: 1px solid rgba(0, 255, 255, 0.3);
-  position: relative;
-  z-index: 1;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 `;
 
 const StoryText = styled.div`
