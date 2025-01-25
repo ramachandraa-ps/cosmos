@@ -5,6 +5,7 @@ import { Stars, OrbitControls } from '@react-three/drei';
 import PlanetBuilder from './PlanetBuilder';
 import SolarSystemDesigner from './SolarSystemDesigner';
 import HabitabilityAnalyzer from './HabitabilityAnalyzer';
+import TimeLapseMode from '../SimulationTools/TimeLapseMode';
 
 const pulseAnimation = keyframes`
   0% { transform: scale(1); }
@@ -199,6 +200,13 @@ function CosmicArchitect() {
       name: 'Habitability Analyzer',
       description: 'Analyze life-sustaining potential',
       section: 'analysis'
+    },
+    {
+      id: 'timeLapse',
+      icon: '⏱️',
+      name: 'Time-Lapse Mode',
+      description: 'Simulate planetary evolution over time',
+      section: 'simulation'
     }
   ];
 
@@ -210,6 +218,8 @@ function CosmicArchitect() {
         return <SolarSystemDesigner onSystemCreate={setSolarSystemData} />;
       case 'habitability':
         return <HabitabilityAnalyzer planetData={planetData} />;
+      case 'timeLapse':
+        return <TimeLapseMode planetData={planetData} />;
       default:
         return <PlanetBuilder onPlanetCreate={setPlanetData} />;
     }
@@ -260,6 +270,25 @@ function CosmicArchitect() {
             <SectionTitle>Analysis Tools</SectionTitle>
             {tools
               .filter(tool => tool.section === 'analysis')
+              .map(tool => (
+                <ToolButton
+                  key={tool.id}
+                  active={activeView === tool.id}
+                  onClick={() => setActiveView(tool.id)}
+                >
+                  <ToolIcon>{tool.icon}</ToolIcon>
+                  <ToolInfo>
+                    <ToolName>{tool.name}</ToolName>
+                    <ToolDescription>{tool.description}</ToolDescription>
+                  </ToolInfo>
+                </ToolButton>
+              ))}
+          </ToolSection>
+
+          <ToolSection>
+            <SectionTitle>Simulation Tools</SectionTitle>
+            {tools
+              .filter(tool => tool.section === 'simulation')
               .map(tool => (
                 <ToolButton
                   key={tool.id}
