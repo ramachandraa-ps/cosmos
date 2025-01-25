@@ -1,8 +1,7 @@
 import React, { Suspense, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars, OrbitControls, useGLTF } from "@react-three/drei";
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
-import styled from 'styled-components';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import ChatBot from './components/ChatBot';
 import SpaceMonitor from './components/SpaceMonitor';
@@ -20,27 +19,6 @@ import CosmicArchitect from './components/CosmicArchitect';
 import { useHistoricEvents } from './services/notificationService';
 import AsteroidDodger from './components/games/AsteroidDodger';
 import TimeTraveler from './components/games/TimeTraveler';
-import PlanetBuilder from './components/CosmicArchitect/PlanetBuilder';
-import HabitabilityAnalyzer from './components/CosmicArchitect/HabitabilityAnalyzer';
-import cosmicArchitectImage from './assets/cosmic_architect.jpeg';
-
-const AppContainer = styled.div`
-  min-height: 100vh;
-  background: url(${cosmicArchitectImage}) no-repeat center center fixed;
-  background-size: cover;
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-  }
-`;
-
 function AstronautModel() {
   const astronautRef = useRef();
   const { scene } = useGLTF("/astronaut_3d/scene.gltf");
@@ -76,90 +54,105 @@ function AstronautModel() {
   );
 }
 
-function AppContent() {
-  const navigate = useNavigate();
-  const [customPlanetData, setCustomPlanetData] = useState(null);
+function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const { events, loading } = useHistoricEvents();
 
-  const handleCreatePlanet = () => {
-    console.log('Navigating to planet builder...');
-    navigate('/planet-builder', { replace: true });
-  };
-
-  const handleAnalyzeHabitability = (planetData) => {
-    setCustomPlanetData(planetData);
-    navigate('/', { replace: true });
-  };
-
-  return (
-    <AppContainer>
-      <nav className="navbar">
-        <div className="nav-logo">COSMOS</div>
-        <div className="nav-links">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/space-monitor" className="nav-link">Space Monitor</Link>
-          <Link to="/deep-space" className="nav-link">Deep Space</Link>
-          <Link to="/interaction" className="nav-link">Interaction Zone</Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
-            <NotificationBell 
-              hasNotifications={!loading && events.length > 0} 
-              notifications={events}
-            />
-          </div>
-        </div>
-      </nav>
-
-      <Routes>
-        <Route path="/space-monitor" element={<SpaceMonitor />} />
-        <Route path="/deep-space" element={<DeepSpace />} />
-        <Route path="/tech-hub" element={<TechHub />} />
-        <Route path="/interaction" element={<InteractionZone />} />
-        <Route path="/celestial-challenge" element={<CelestialChallenge />} />
-        <Route path="/tech-hub/:category" element={<CategoryPage />} />
-        <Route path="/webinars" element={<Webinars />} />
-        <Route path="/quiz-time" element={<QuizTime />} />
-        <Route path="/games" element={<Games />} />
-        <Route path="/games/constellation-connect" element={<ConstellationConnect />} />
-        <Route path="/cosmic-architect" element={<CosmicArchitect />} />
-        <Route path="/games/asteroid-dodger" element={<AsteroidDodger />} />
-        <Route path="/games/time-traveler" element={<TimeTraveler />} />
-        <Route 
-          path="/habitability-analyzer" 
-          element={
-            <HabitabilityAnalyzer 
-              planetData={customPlanetData}
-              onCreatePlanet={handleCreatePlanet}
-            />
-          } 
-        />
-        <Route 
-          path="/planet-builder" 
-          element={
-            <PlanetBuilder 
-              onAnalyzeHabitability={handleAnalyzeHabitability}
-            />
-          } 
-        />
-        <Route path="/" element={
-          <HabitabilityAnalyzer 
-            planetData={customPlanetData}
-            onCreatePlanet={handleCreatePlanet}
-          />
-        } />
-      </Routes>
-
-      {/* ChatBot Components */}
-      <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-    </AppContainer>
-  );
-}
-
-function App() {
   return (
     <Router>
-      <AppContent />
+      <div className="app-container">
+        <nav className="navbar">
+          <div className="nav-logo">COSMOS</div>
+          <div className="nav-links">
+            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/space-monitor" className="nav-link">Space Monitor</Link>
+            <Link to="/deep-space" className="nav-link">Deep Space</Link>
+            <Link to="/interaction" className="nav-link">Interaction Zone</Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
+              <NotificationBell 
+                hasNotifications={!loading && events.length > 0} 
+                notifications={events}
+              />
+            </div>
+          </div>
+        </nav>
+
+        <Routes>
+          <Route path="/space-monitor" element={<SpaceMonitor />} />
+          <Route path="/deep-space" element={<DeepSpace />} />
+          <Route path="/tech-hub" element={<TechHub />} />
+          <Route path="/interaction" element={<InteractionZone />} />
+          <Route path="/celestial-challenge" element={<CelestialChallenge />} />
+          <Route path="/tech-hub/:category" element={<CategoryPage />} />
+          <Route path="/webinars" element={<Webinars />} />
+          <Route path="/quiz-time" element={<QuizTime />} />
+          <Route path="/games" element={<Games />} />
+          <Route path="/games/constellation-connect" element={<ConstellationConnect />} />
+          <Route path="/cosmic-architect" element={<CosmicArchitect />} />
+          <Route path="/games/asteroid-dodger" element={<AsteroidDodger />} />
+          <Route path="/games/time-traveler" element={<TimeTraveler />} />
+          <Route path="/" element={
+            <main className="hero-section">
+              <div className="hero-content">
+                <div className="subtitle">Welcome to the future</div>
+                <h1>Explore The Cosmos</h1>
+                <p>Embark on an extraordinary journey through the infinite expanse of space. 
+                   Discover mysterious nebulae, traverse distant galaxies, and unlock the 
+                   secrets of the universe. Your cosmic adventure begins here.</p>
+                <div className="hero-buttons">
+                  <button className="explore-btn">
+                    Begin Journey
+                  </button>
+                  <button 
+                    className="chatbot-btn"
+                    onClick={() => setIsChatOpen(!isChatOpen)}
+                  >
+                    {isChatOpen ? 'Close AI Assistant' : 'Ask AI Assistant'} 
+                  </button>
+                </div>
+              </div>
+              
+              <div className="canvas-container">
+                <Canvas camera={{ position: [0, 0, 12], fov: 50 }}>
+                  <Suspense fallback={null}>
+                    <ambientLight intensity={1.5} />
+                    <pointLight position={[10, 10, 10]} intensity={2.5} />
+                    <spotLight
+                      position={[0, 5, 8]}
+                      angle={0.6}
+                      penumbra={0.8}
+                      intensity={2}
+                      castShadow
+                    />
+                    <Stars 
+                      radius={300} 
+                      depth={50} 
+                      count={4000}
+                      factor={4} 
+                      saturation={0.5} 
+                      fade 
+                      speed={1}
+                    />
+                    <AstronautModel />
+                    <OrbitControls 
+                      enableZoom={false} 
+                      autoRotate={false}
+                      enablePan={false}
+                      maxPolarAngle={Math.PI * 0.6}
+                      minPolarAngle={Math.PI * 0.4}
+                      enableRotate={false}
+                    />
+                  </Suspense>
+                </Canvas>
+              </div>
+            </main>
+          } />
+        </Routes>
+
+        {/* ChatBot Components */}
+        <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      </div>
     </Router>
   );
 }

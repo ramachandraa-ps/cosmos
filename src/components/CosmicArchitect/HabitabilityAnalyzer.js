@@ -95,35 +95,6 @@ const PlanetCard = styled.div`
   }
 `;
 
-const CreatePlanetCard = styled(PlanetCard)`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 150px;
-  background: rgba(166, 255, 0, 0.1);
-  border: 2px dashed rgba(166, 255, 0, 0.3);
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(166, 255, 0, 0.2);
-    border-color: rgba(166, 255, 0, 0.5);
-    transform: translateY(-2px);
-  }
-
-  h3 {
-    color: #a6ff00;
-    margin-bottom: 0.5rem;
-  }
-
-  p {
-    text-align: center;
-    font-size: 0.9rem;
-    opacity: 0.8;
-  }
-`;
-
 const AnalysisSection = styled.div`
   margin-bottom: 2rem;
 `;
@@ -339,7 +310,7 @@ const solarSystemPlanets = {
   }
 };
 
-const HabitabilityAnalyzer = ({ planetData: customPlanetData, onCreatePlanet }) => {
+const HabitabilityAnalyzer = ({ planetData: customPlanetData }) => {
   const [selectedPlanet, setSelectedPlanet] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [analysis, setAnalysis] = useState(null);
@@ -528,10 +499,6 @@ const HabitabilityAnalyzer = ({ planetData: customPlanetData, onCreatePlanet }) 
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <PlanetGrid>
-            <CreatePlanetCard onClick={onCreatePlanet}>
-              <h3>Create Your Planet</h3>
-              <p>Tap here to build and analyze your own custom planet</p>
-            </CreatePlanetCard>
             {filteredPlanets.map(planet => (
               <PlanetCard
                 key={planet.name}
