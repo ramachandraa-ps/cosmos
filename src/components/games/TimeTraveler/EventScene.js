@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled, { keyframes } from 'styled-components';
 import { searchWithGemini } from '../../../services/geminiService';
+import { evaluateAchievement } from '../../../services/achievementService';
+import { MASTERY_LEVELS, NEXT_EVENT_MAP } from './constants';
 
 const SceneContainer = styled.div`
   position: relative;
@@ -145,23 +147,131 @@ const SendButton = styled(ActionButton)`
   padding: 0.8rem 1.5rem;
 `;
 
-const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
+const AchievementModal = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  border-radius: 15px;
+  padding: 2rem;
+  color: white;
+  z-index: 10;
+  min-width: 300px;
+  text-align: center;
+`;
+
+const AchievementBadge = styled.div`
+  font-size: 4rem;
+  margin: 1rem 0;
+`;
+
+const AchievementTitle = styled.h3`
+  color: #00ffff;
+  margin: 0.5rem 0;
+`;
+
+const AchievementDescription = styled.p`
+  color: #ddd;
+  margin: 0.5rem 0;
+`;
+
+const AchievementDetails = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  text-align: left;
+`;
+
+const CloseButton = styled(ActionButton)`
+  margin-top: 1rem;
+`;
+
+const UnlockMessage = styled.div`
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+`;
+
+const UnlockIcon = styled.span`
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+`;
+
+const fallAnimation = keyframes`
+  0% {
+    transform: translateY(-100vh);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+`;
+
+const popAnimation = keyframes`
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+`;
+
+const CelebrationEmoji = styled.div`
+  position: fixed;
+  font-size: 2rem;
+  animation: ${fallAnimation} 2s linear;
+  z-index: 1000;
+  pointer-events: none;
+`;
+
+const EventScene = ({ event, onJournalEntry, onArtifactCollect, onEventUnlock }) => {
   const [story, setStory] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [userQuestion, setUserQuestion] = useState('');
+  const [achievement, setAchievement] = useState(null);
+  const [celebrationEmojis, setCelebrationEmojis] = useState([]);
+  const [eventStats, setEventStats] = useState({
+    observations: 0,
+    conversations: 0,
+    questions: []
+  });
 
-  if (!event) {
-    return (
-      <SceneContainer>
-        <SceneTitle>Welcome to Time Traveler</SceneTitle>
-        <SceneDescription>
-          Select a historical event from the timeline to begin your journey through the history of astronomy.
-          Each period offers unique discoveries, conversations with historical figures, and artifacts to collect!
-        </SceneDescription>
-      </SceneContainer>
-    );
-  }
+  useEffect(() => {
+    if (celebrationEmojis.length > 0) {
+      const timer = setTimeout(() => {
+        setCelebrationEmojis([]);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [celebrationEmojis]);
+
+  useEffect(() => {
+    // Reset stats when event changes
+    if (event) {
+      setEventStats({
+        observations: 0,
+        conversations: 0,
+        questions: []
+      });
+    }
+  }, [event?.id]);
+
+  const createCelebrationEmojis = () => {
+    const emojis = ['🎉', '🎊', '⭐', '🌟', '✨'];
+    const newEmojis = Array(15).fill(null).map((_, i) => ({
+      id: i,
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+      style: {
+        left: `${Math.random() * 100}vw`,
+        top: '-50px',
+        animationDelay: `${Math.random() * 1}s`
+      }
+    }));
+    setCelebrationEmojis(newEmojis);
+  };
 
   const handleObservation = async () => {
     setLoading(true);
@@ -173,6 +283,10 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
       );
       
       setStory(response.text);
+      setEventStats(prev => ({
+        ...prev,
+        observations: prev.observations + 1
+      }));
       
       onJournalEntry({
         eventId: event.id,
@@ -198,11 +312,16 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
         'historical_figure_conversation',
         event.title,
         event.date,
-        userQuestion // Pass the user's question
+        userQuestion
       );
       
       setStory(response.text);
       setShowDialog(false);
+      setEventStats(prev => ({
+        ...prev,
+        conversations: prev.conversations + 1,
+        questions: [...prev.questions, userQuestion]
+      }));
       setUserQuestion('');
       
       onJournalEntry({
@@ -218,19 +337,66 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
     setLoading(false);
   };
 
+  const handleCollect = async () => {
+    setLoading(true);
+    try {
+      const achievementResult = evaluateAchievement(eventStats);
+      setAchievement(achievementResult);
+      createCelebrationEmojis();
+      
+      // Determine if score is high enough to unlock next event
+      if (achievementResult.score >= MASTERY_LEVELS.SKILLED.minScore) {
+        const nextEventId = NEXT_EVENT_MAP[event.id];
+        if (nextEventId) {
+          onEventUnlock(nextEventId);
+        }
+      }
+      
+      onArtifactCollect({
+        id: `${event.id}_achievement`,
+        type: 'achievement',
+        title: achievementResult.level,
+        description: achievementResult.description,
+        badge: achievementResult.badge,
+        score: achievementResult.score,
+        eventId: event.id
+      });
+    } catch (error) {
+      console.error('Error collecting achievement:', error);
+    }
+    setLoading(false);
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && userQuestion.trim()) {
       handleTalk();
     }
   };
 
-  const handleCollect = async () => {
-    // Placeholder for collect functionality
-    console.log('Collect functionality coming soon!');
+  const handleCloseAchievement = () => {
+    setAchievement(null);
+    setCelebrationEmojis([]);
   };
+
+  if (!event) {
+    return (
+      <SceneContainer>
+        <SceneTitle>Welcome to Time Traveler</SceneTitle>
+        <SceneDescription>
+          Select a historical event from the timeline to begin your journey through the history of astronomy.
+          Each period offers unique discoveries, conversations with historical figures, and artifacts to collect!
+        </SceneDescription>
+      </SceneContainer>
+    );
+  }
 
   return (
     <SceneContainer backgroundImage={event.backgroundImage}>
+      {celebrationEmojis.map(({ id, emoji, style }) => (
+        <CelebrationEmoji key={id} style={style}>
+          {emoji}
+        </CelebrationEmoji>
+      ))}
       <SceneTitle>{event.title}</SceneTitle>
       <SceneDescription>{event.description}</SceneDescription>
 
@@ -256,7 +422,7 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
         {event.artifacts && (
           <ActionButton 
             onClick={handleCollect}
-            disabled={loading || !story}
+            disabled={loading || !story || eventStats.observations === 0}
           >
             <CollectIcon /> Collect
           </ActionButton>
@@ -279,6 +445,29 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
           Send
         </SendButton>
       </DialogInput>
+
+      {achievement && (
+        <AchievementModal>
+          <AchievementBadge>{achievement.badge}</AchievementBadge>
+          <AchievementTitle>{achievement.level}</AchievementTitle>
+          <AchievementDescription>{achievement.description}</AchievementDescription>
+          <AchievementDetails>
+            {achievement.details.map((detail, index) => (
+              <li key={index}>{detail}</li>
+            ))}
+          </AchievementDetails>
+          {achievement.score >= MASTERY_LEVELS.SKILLED.minScore && NEXT_EVENT_MAP[event.id] && (
+            <UnlockMessage>
+              <UnlockIcon>🔓</UnlockIcon>
+              Congratulations! You've unlocked the next event: "{NEXT_EVENT_MAP[event.id]}"!
+              <p>Continue your journey through astronomical history with new discoveries.</p>
+            </UnlockMessage>
+          )}
+          <CloseButton onClick={handleCloseAchievement}>
+            Continue Exploring
+          </CloseButton>
+        </AchievementModal>
+      )}
     </SceneContainer>
   );
 };

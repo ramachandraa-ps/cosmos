@@ -71,6 +71,20 @@ const TimeTraveler = () => {
     }
   };
 
+  const handleEventUnlock = (completedEventId) => {
+    // Find the next event in the timeline
+    const currentIndex = timelineEvents.findIndex(event => event.id === completedEventId);
+    const nextEvent = timelineEvents[currentIndex + 1];
+
+    if (nextEvent && !gameProgress.unlockedEvents.includes(nextEvent.id)) {
+      setGameProgress(prev => ({
+        ...prev,
+        unlockedEvents: [...prev.unlockedEvents, nextEvent.id],
+        completedEvents: [...prev.completedEvents, completedEventId]
+      }));
+    }
+  };
+
   return (
     <GameContainer>
       <InterfaceContainer>
@@ -84,6 +98,7 @@ const TimeTraveler = () => {
           event={currentEvent}
           onJournalEntry={handleJournalEntry}
           onArtifactCollect={handleArtifactCollect}
+          onEventUnlock={handleEventUnlock}
         />
         <Journal 
           entries={journal}
