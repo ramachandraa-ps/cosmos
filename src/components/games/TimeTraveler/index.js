@@ -26,7 +26,7 @@ const TimeTraveler = () => {
   const [journal, setJournal] = useState([]);
   const [artifacts, setArtifacts] = useState([]);
   const [gameProgress, setGameProgress] = useState({
-    unlockedEvents: [timelineEvents[0].id],
+    unlockedEvents: ['ancient_astronomy'], // Start with first event unlocked
     completedEvents: [],
     discoveredArtifacts: []
   });
@@ -35,10 +35,34 @@ const TimeTraveler = () => {
     // Load saved game progress from localStorage
     const savedProgress = localStorage.getItem('timeTravelerProgress');
     if (savedProgress) {
-      const parsed = JSON.parse(savedProgress);
-      setGameProgress(parsed);
-      setJournal(parsed.journal || []);
-      setArtifacts(parsed.artifacts || []);
+      try {
+        const parsed = JSON.parse(savedProgress);
+        console.log('Loading saved progress:', parsed);
+        
+        // Ensure at least the first event is unlocked
+        const unlockedEvents = parsed.unlockedEvents || ['ancient_astronomy'];
+        if (!unlockedEvents.includes('ancient_astronomy')) {
+          unlockedEvents.push('ancient_astronomy');
+        }
+        
+        setGameProgress({
+          ...parsed,
+          unlockedEvents
+        });
+        setJournal(parsed.journal || []);
+        setArtifacts(parsed.artifacts || []);
+        
+        // Set current event to the last unlocked event
+        if (unlockedEvents.length > 0) {
+          const lastUnlockedEventId = unlockedEvents[unlockedEvents.length - 1];
+          const lastEvent = timelineEvents.find(event => event.id === lastUnlockedEventId);
+          if (lastEvent) {
+            setCurrentEvent(lastEvent);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading saved progress:', error);
+      }
     }
   }, []);
 
@@ -52,7 +76,13 @@ const TimeTraveler = () => {
   }, [gameProgress, journal, artifacts]);
 
   const handleEventSelect = (event) => {
-    setCurrentEvent(event);
+    // Only allow selecting unlocked events
+    if (gameProgress.unlockedEvents.includes(event.id)) {
+      console.log('Selecting event:', event.title);
+      setCurrentEvent(event);
+    } else {
+      console.log('Event locked:', event.title);
+    }
   };
 
   const handleJournalEntry = (entry) => {
@@ -71,18 +101,36 @@ const TimeTraveler = () => {
     }
   };
 
-  const handleEventUnlock = (completedEventId) => {
-    // Find the next event in the timeline
-    const currentIndex = timelineEvents.findIndex(event => event.id === completedEventId);
-    const nextEvent = timelineEvents[currentIndex + 1];
+  const handleEventUnlock = (nextEventId) => {
+    console.log('Handling event unlock:', {
+      nextEventId,
+      currentEvent: currentEvent?.id,
+      unlockedEvents: gameProgress.unlockedEvents
+    });
 
-    if (nextEvent && !gameProgress.unlockedEvents.includes(nextEvent.id)) {
-      setGameProgress(prev => ({
-        ...prev,
-        unlockedEvents: [...prev.unlockedEvents, nextEvent.id],
-        completedEvents: [...prev.completedEvents, completedEventId]
-      }));
+    // Mark current event as completed and unlock next event
+    const newProgress = {
+      ...gameProgress,
+      unlockedEvents: [...new Set([...gameProgress.unlockedEvents, nextEventId])],
+      completedEvents: [...new Set([...gameProgress.completedEvents, currentEvent.id])]
+    };
+    
+    console.log('Updating game progress:', newProgress);
+    setGameProgress(newProgress);
+
+    // Find and set the next event
+    const nextEvent = timelineEvents.find(event => event.id === nextEventId);
+    if (nextEvent) {
+      console.log('Setting next event:', nextEvent.title);
+      setCurrentEvent(nextEvent);
     }
+
+    // Save to localStorage
+    localStorage.setItem('timeTravelerProgress', JSON.stringify({
+      ...newProgress,
+      journal,
+      artifacts
+    }));
   };
 
   return (

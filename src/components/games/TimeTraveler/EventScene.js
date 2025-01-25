@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import { searchWithGemini } from '../../../services/geminiService';
 import { evaluateAchievement } from '../../../services/achievementService';
 import { MASTERY_LEVELS, NEXT_EVENT_MAP } from './constants';
+import { chapterQuestions } from './data/questions';
 
 const SceneContainer = styled.div`
   position: relative;
@@ -226,6 +227,65 @@ const CelebrationEmoji = styled.div`
   pointer-events: none;
 `;
 
+const QuizModal = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  padding: 2rem;
+  border-radius: 15px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: white;
+  width: 90%;
+  max-width: 600px;
+  z-index: 1000;
+`;
+
+const QuizQuestion = styled.h3`
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #00ffff;
+`;
+
+const OptionButton = styled.button`
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(0, 255, 255, 0.2);
+  }
+`;
+
+const BadgeAward = styled.div`
+  text-align: center;
+  margin-top: 2rem;
+`;
+
+const Badge = styled.div`
+  font-size: 4rem;
+  margin: 1rem 0;
+`;
+
+const BadgeTitle = styled.h3`
+  color: #00ffff;
+  margin: 0.5rem 0;
+`;
+
+const BadgeDescription = styled.p`
+  color: #aaa;
+  font-size: 0.9rem;
+`;
+
 const EventScene = ({ event, onJournalEntry, onArtifactCollect, onEventUnlock }) => {
   const [story, setStory] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -233,11 +293,38 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect, onEventUnlock })
   const [userQuestion, setUserQuestion] = useState('');
   const [achievement, setAchievement] = useState(null);
   const [celebrationEmojis, setCelebrationEmojis] = useState([]);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [awardedBadge, setAwardedBadge] = useState(null);
   const [eventStats, setEventStats] = useState({
     observations: 0,
     conversations: 0,
     questions: []
   });
+
+  const badges = {
+    NOVICE: {
+      emoji: '🌟',
+      title: 'Novice Explorer',
+      description: 'Taking your first steps into astronomical discovery'
+    },
+    SKILLED: {
+      emoji: '🔭',
+      title: 'Skilled Observer',
+      description: 'Developing a deeper understanding of the cosmos'
+    },
+    MASTER: {
+      emoji: '🌌',
+      title: 'Master Astronomer',
+      description: 'Achieving profound insights into the universe'
+    }
+  };
+
+  const clearStory = () => {
+    setStory(null);
+    setShowDialog(false);
+    setUserQuestion('');
+  };
 
   useEffect(() => {
     if (celebrationEmojis.length > 0) {
@@ -249,13 +336,37 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect, onEventUnlock })
   }, [celebrationEmojis]);
 
   useEffect(() => {
-    // Reset stats when event changes
+    // Debug logging for event changes
+    console.log('Event changed:', {
+      eventId: event?.id,
+      title: event?.title,
+      stats: eventStats
+    });
+  }, [event]);
+
+  useEffect(() => {
+    // Debug logging for stats changes
+    console.log('Stats updated:', eventStats);
+  }, [eventStats]);
+
+  useEffect(() => {
+    // Reset all state when event changes
     if (event) {
+      console.log('Loading new chapter:', event.title);
+      clearStory();
       setEventStats({
         observations: 0,
         conversations: 0,
         questions: []
       });
+      setAchievement(null);
+      setCelebrationEmojis([]);
+      setShowQuiz(false);
+      setQuizCompleted(false);
+      setAwardedBadge(null);
+      setLoading(false);
+      setShowDialog(false);
+      setUserQuestion('');
     }
   }, [event?.id]);
 
@@ -274,6 +385,8 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect, onEventUnlock })
   };
 
   const handleObservation = async () => {
+    console.log('Starting observation...');
+    clearStory(); // Clear previous story before new observation
     setLoading(true);
     try {
       const response = await searchWithGemini(
@@ -301,11 +414,13 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect, onEventUnlock })
   };
 
   const handleTalk = async () => {
+    console.log('Starting conversation...');
     if (!showDialog) {
       setShowDialog(true);
       return;
     }
 
+    clearStory(); // Clear previous story before new conversation
     setLoading(true);
     try {
       const response = await searchWithGemini(
@@ -338,33 +453,77 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect, onEventUnlock })
   };
 
   const handleCollect = async () => {
+    if (eventStats.observations === 0 || eventStats.conversations === 0) {
+      return;
+    }
+
     setLoading(true);
     try {
-      const achievementResult = evaluateAchievement(eventStats);
-      setAchievement(achievementResult);
-      createCelebrationEmojis();
-      
-      // Determine if score is high enough to unlock next event
-      if (achievementResult.score >= MASTERY_LEVELS.SKILLED.minScore) {
-        const nextEventId = NEXT_EVENT_MAP[event.id];
-        if (nextEventId) {
-          onEventUnlock(nextEventId);
-        }
-      }
-      
-      onArtifactCollect({
-        id: `${event.id}_achievement`,
-        type: 'achievement',
-        title: achievementResult.level,
-        description: achievementResult.description,
-        badge: achievementResult.badge,
-        score: achievementResult.score,
-        eventId: event.id
-      });
+      // Show quiz instead of immediately collecting
+      setShowQuiz(true);
     } catch (error) {
-      console.error('Error collecting achievement:', error);
+      console.error('Error in handleCollect:', error);
     }
     setLoading(false);
+  };
+
+  const handleQuizAnswer = (selectedAnswer) => {
+    const currentQuestion = chapterQuestions[event.id];
+    const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+    
+    let badge;
+    if (isCorrect) {
+      // Award badge based on stats and correct answer
+      if (eventStats.observations >= 2 && eventStats.conversations >= 2) {
+        badge = badges.MASTER;
+      } else if (eventStats.observations >= 1 && eventStats.conversations >= 1) {
+        badge = badges.SKILLED;
+      } else {
+        badge = badges.NOVICE;
+      }
+    } else {
+      badge = badges.NOVICE;
+    }
+
+    setAwardedBadge(badge);
+    setQuizCompleted(true);
+
+    // Collect artifact with badge
+    onArtifactCollect({
+      id: `${event.id}_achievement`,
+      type: 'achievement',
+      title: badge.title,
+      description: badge.description,
+      badge: badge.emoji,
+      score: isCorrect ? 100 : 50,
+      eventId: event.id
+    });
+
+    // Create celebration effect
+    createCelebrationEmojis();
+  };
+
+  const handleContinue = () => {
+    const nextEventId = NEXT_EVENT_MAP[event.id];
+    console.log('Transitioning to next chapter:', nextEventId);
+
+    // Reset current chapter state
+    setShowQuiz(false);
+    setQuizCompleted(false);
+    setAwardedBadge(null);
+    setAchievement(null);
+    setCelebrationEmojis([]);
+    clearStory();
+    setEventStats({
+      observations: 0,
+      conversations: 0,
+      questions: []
+    });
+
+    // Unlock and navigate to next event
+    if (nextEventId) {
+      onEventUnlock(nextEventId);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -376,6 +535,15 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect, onEventUnlock })
   const handleCloseAchievement = () => {
     setAchievement(null);
     setCelebrationEmojis([]);
+    
+    // If there's a next event, trigger navigation to it
+    if (achievement?.score >= MASTERY_LEVELS.SKILLED.minScore) {
+      const nextEventId = NEXT_EVENT_MAP[event.id];
+      if (nextEventId) {
+        console.log('Navigating to next event on continue:', nextEventId);
+        onEventUnlock(nextEventId);
+      }
+    }
   };
 
   if (!event) {
@@ -446,20 +614,47 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect, onEventUnlock })
         </SendButton>
       </DialogInput>
 
+      {showQuiz && (
+        <QuizModal>
+          {!quizCompleted ? (
+            <>
+              <QuizQuestion>{chapterQuestions[event.id].question}</QuizQuestion>
+              {chapterQuestions[event.id].options.map((option, index) => (
+                <OptionButton
+                  key={index}
+                  onClick={() => handleQuizAnswer(option)}
+                >
+                  {option}
+                </OptionButton>
+              ))}
+            </>
+          ) : (
+            <BadgeAward>
+              <Badge>{awardedBadge.emoji}</Badge>
+              <BadgeTitle>{awardedBadge.title}</BadgeTitle>
+              <BadgeDescription>{awardedBadge.description}</BadgeDescription>
+              <CloseButton onClick={handleContinue}>
+                Continue to Next Chapter
+              </CloseButton>
+            </BadgeAward>
+          )}
+        </QuizModal>
+      )}
+
       {achievement && (
         <AchievementModal>
           <AchievementBadge>{achievement.badge}</AchievementBadge>
           <AchievementTitle>{achievement.level}</AchievementTitle>
           <AchievementDescription>{achievement.description}</AchievementDescription>
           <AchievementDetails>
-            {achievement.details.map((detail, index) => (
+            {achievement.details && achievement.details.map((detail, index) => (
               <li key={index}>{detail}</li>
             ))}
           </AchievementDetails>
           {achievement.score >= MASTERY_LEVELS.SKILLED.minScore && NEXT_EVENT_MAP[event.id] && (
             <UnlockMessage>
               <UnlockIcon>🔓</UnlockIcon>
-              Congratulations! You've unlocked the next event: "{NEXT_EVENT_MAP[event.id]}"!
+              <p>Congratulations! You've unlocked the next event: "newton_universal_gravity"!</p>
               <p>Continue your journey through astronomical history with new discoveries.</p>
             </UnlockMessage>
           )}

@@ -6,24 +6,19 @@ const calculateMasteryScore = (eventData) => {
 
   // Check if user has made observations
   if (eventData.observations > 0) {
-    score += 30; // Base points for making observations
-    score += Math.min(20, eventData.observations * 5); // Additional points for multiple observations
+    score += 40; // Increased base points for making observations
+    score += Math.min(20, eventData.observations * 10); // Increased points for multiple observations
   }
 
   // Check if user has engaged in conversations
   if (eventData.conversations > 0) {
-    score += 30; // Base points for having conversations
-    score += Math.min(20, eventData.conversations * 5); // Additional points for multiple conversations
+    score += 40; // Increased base points for having conversations
+    score += Math.min(20, eventData.conversations * 10); // Increased points for multiple conversations
   }
 
-  // Bonus points for asking meaningful questions (determined by question length and keywords)
-  if (eventData.questions) {
-    const meaningfulQuestions = eventData.questions.filter(q => {
-      const hasKeywords = /discovery|observation|method|theory|experiment|research|astronomy|universe|space|time/i.test(q);
-      const isDetailedQuestion = q.length > 30;
-      return hasKeywords && isDetailedQuestion;
-    });
-    score += Math.min(20, meaningfulQuestions.length * 5);
+  // Simplified bonus points for questions
+  if (eventData.questions && eventData.questions.length > 0) {
+    score += Math.min(20, eventData.questions.length * 10);
   }
 
   return Math.min(score, maxScore);

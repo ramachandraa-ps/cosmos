@@ -26,7 +26,7 @@ export const MASTERY_LEVELS = {
 };
 
 export const NEXT_EVENT_MAP = {
-  'ancient_astronomy': 'galileo_telescope',
-  'galileo_telescope': 'newton_universal_gravity',
-  'newton_universal_gravity': 'hubble_expansion'
+  'ancient_astronomy': 'newton_gravity',
+  'newton_gravity': 'galileo_telescope',
+  'galileo_telescope': null // Last chapter for now
 };
