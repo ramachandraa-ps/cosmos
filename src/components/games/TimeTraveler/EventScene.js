@@ -116,9 +116,40 @@ const CollectIcon = () => (
   </svg>
 );
 
+const DialogInput = styled.div`
+  display: ${props => props.show ? 'flex' : 'none'};
+  gap: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+`;
+
+const StyledInput = styled.input`
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: 25px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 1rem;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(0, 255, 255, 0.6);
+  }
+`;
+
+const SendButton = styled(ActionButton)`
+  min-width: auto;
+  padding: 0.8rem 1.5rem;
+`;
+
 const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
   const [story, setStory] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [userQuestion, setUserQuestion] = useState('');
 
   if (!event) {
     return (
@@ -156,26 +187,41 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
   };
 
   const handleTalk = async () => {
+    if (!showDialog) {
+      setShowDialog(true);
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await searchWithGemini(
         'historical_figure_conversation',
         event.title,
-        event.date
+        event.date,
+        userQuestion // Pass the user's question
       );
       
       setStory(response.text);
+      setShowDialog(false);
+      setUserQuestion('');
       
       onJournalEntry({
         eventId: event.id,
         type: 'conversation',
-        content: response.text
+        content: response.text,
+        question: userQuestion
       });
     } catch (error) {
       console.error('Error in conversation:', error);
       setStory('Error in conversation. Please try again.');
     }
     setLoading(false);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && userQuestion.trim()) {
+      handleTalk();
+    }
   };
 
   const handleCollect = async () => {
@@ -203,7 +249,7 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
         </ActionButton>
         <ActionButton 
           onClick={handleTalk}
-          disabled={loading || !story}
+          disabled={loading}
         >
           <TalkIcon /> Talk
         </ActionButton>
@@ -216,6 +262,23 @@ const EventScene = ({ event, onJournalEntry, onArtifactCollect }) => {
           </ActionButton>
         )}
       </InteractionArea>
+
+      <DialogInput show={showDialog}>
+        <StyledInput
+          type="text"
+          placeholder="Ask your question..."
+          value={userQuestion}
+          onChange={(e) => setUserQuestion(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={loading}
+        />
+        <SendButton 
+          onClick={handleTalk}
+          disabled={loading || !userQuestion.trim()}
+        >
+          Send
+        </SendButton>
+      </DialogInput>
     </SceneContainer>
   );
 };
