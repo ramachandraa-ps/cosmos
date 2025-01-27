@@ -6,7 +6,7 @@ import { OrbitControls } from '@react-three/drei';
 const Container = styled.div`
   position: fixed;
   top: 100px;
-  right: 100px;
+  right: 70px;
   width: 400px;
   background: rgba(15, 15, 25, 0.95);
   backdrop-filter: blur(10px);
