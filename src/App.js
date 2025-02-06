@@ -6,7 +6,7 @@ import "./App.css";
 import ChatBot from './components/ChatBot';
 import SpaceMonitor from './components/SpaceMonitor';
 import DeepSpace from './components/DeepSpace';
-import TechHub from './components/TechHub';
+//import TechHub from './components/TechHub';
 import InteractionZone from './components/InteractionZone';
 import CelestialChallenge from './components/CelestialChallenge';
 import Webinars from './components/Webinars';
@@ -69,7 +69,7 @@ function App() {
             <Link to="/deep-space" className="nav-link">Deep Space</Link>
             <Link to="/interaction" className="nav-link">Interaction Zone</Link>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
+              
               <NotificationBell 
                 hasNotifications={!loading && events.length > 0} 
                 notifications={events}
@@ -81,7 +81,7 @@ function App() {
         <Routes>
           <Route path="/space-monitor" element={<SpaceMonitor />} />
           <Route path="/deep-space" element={<DeepSpace />} />
-          <Route path="/tech-hub" element={<TechHub />} />
+          
           <Route path="/interaction" element={<InteractionZone />} />
           <Route path="/celestial-challenge" element={<CelestialChallenge />} />
           <Route path="/tech-hub/:category" element={<CategoryPage />} />
