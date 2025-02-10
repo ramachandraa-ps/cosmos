@@ -23,6 +23,7 @@ import TimeTraveler from './components/games/TimeTraveler';
 import ProfileAvatar from './components/ProfileAvatar';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPrompt from './components/LoginPrompt';
+import SpaceLessons from './components/SpaceLessons';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -130,6 +131,7 @@ function App() {
             <Route path="/cosmic-architect" element={<CosmicArchitect />} />
             <Route path="/games/asteroid-dodger" element={<AsteroidDodger />} />
             <Route path="/games/time-traveler" element={<TimeTraveler />} />
+            <Route path="/space-lessons" element={<SpaceLessons />} />
             <Route path="/" element={
               <main className="hero-section">
                 <div className="hero-content">

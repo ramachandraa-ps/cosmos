@@ -113,6 +113,12 @@ const InteractionZone = () => {
       path: '/games'
     },
     {
+      title: 'Space Lessons',
+      image: '/interaction/SL.jpg',
+      description: 'Access free and premium space science courses',
+      path: '/space-lessons'
+    },
+    {
       title: 'Webinars',
       image: '/interaction/Webinar.jpg',
       description: 'Join interactive space science webinars',
