@@ -1,7 +1,7 @@
 import React, { Suspense, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars, OrbitControls, useGLTF } from "@react-three/drei";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 import "./App.css";
 import ChatBot from './components/ChatBot';
 import SpaceMonitor from './components/SpaceMonitor';
@@ -19,6 +19,21 @@ import CosmicArchitect from './components/CosmicArchitect';
 import { useHistoricEvents } from './services/notificationService';
 import AsteroidDodger from './components/games/AsteroidDodger';
 import TimeTraveler from './components/games/TimeTraveler';
+import ProfileAvatar from './components/ProfileAvatar';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import LoginPrompt from './components/LoginPrompt';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return <LoginPrompt isProtectedRoute={true} />;
+  }
+
+  return children;
+};
+
 function AstronautModel() {
   const astronautRef = useRef();
   const { scene } = useGLTF("/astronaut_3d/scene.gltf");
@@ -59,103 +74,124 @@ function App() {
   const { events, loading } = useHistoricEvents();
 
   return (
-    <Router>
-      <div className="app-container">
-        <nav className="navbar">
-          <div className="nav-logo">COSMOS</div>
-          <div className="nav-links">
-            <Link to="/" className="nav-link">Home</Link>
-            <Link to="/space-monitor" className="nav-link">Space Monitor</Link>
-            <Link to="/deep-space" className="nav-link">Deep Space</Link>
-            <Link to="/interaction" className="nav-link">Interaction Zone</Link>
-            <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              
-              <NotificationBell 
-                hasNotifications={!loading && events.length > 0} 
-                notifications={events}
-              />
+    <AuthProvider>
+      <Router>
+        <div className="app-container">
+          <nav className="navbar">
+            <div className="nav-logo">COSMOS</div>
+            <div className="nav-links">
+              <Link to="/" className="nav-link">Home</Link>
+              <Link to="/space-monitor" className="nav-link">Space Monitor</Link>
+              <Link to="/deep-space" className="nav-link">Deep Space</Link>
+              <Link to="/interaction" className="nav-link">Interaction Zone</Link>
+              <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <ProfileAvatar />
+                <NotificationBell 
+                  hasNotifications={!loading && events.length > 0} 
+                  notifications={events}
+                />
+              </div>
             </div>
-          </div>
-        </nav>
+          </nav>
 
-        <Routes>
-          <Route path="/space-monitor" element={<SpaceMonitor />} />
-          <Route path="/deep-space" element={<DeepSpace />} />
-          
-          <Route path="/tech-hub" element={<TechHub />} />
-          <Route path="/interaction" element={<InteractionZone />} />
-          <Route path="/celestial-challenge" element={<CelestialChallenge />} />
-          <Route path="/tech-hub/:category" element={<CategoryPage />} />
-          <Route path="/webinars" element={<Webinars />} />
-          <Route path="/quiz-time" element={<QuizTime />} />
-          <Route path="/games" element={<Games />} />
-          <Route path="/games/constellation-connect" element={<ConstellationConnect />} />
-          <Route path="/cosmic-architect" element={<CosmicArchitect />} />
-          <Route path="/games/asteroid-dodger" element={<AsteroidDodger />} />
-          <Route path="/games/time-traveler" element={<TimeTraveler />} />
-          <Route path="/" element={
-            <main className="hero-section">
-              <div className="hero-content">
-                <div className="subtitle">Welcome to the future</div>
-                <h1>Explore The Cosmos</h1>
-                <p>Embark on an extraordinary journey through the infinite expanse of space. 
-                   Discover mysterious nebulae, traverse distant galaxies, and unlock the 
-                   secrets of the universe. Your cosmic adventure begins here.</p>
-                <div className="hero-buttons">
-                  <button className="explore-btn">
-                    Begin Journey
-                  </button>
-                  <button 
-                    className="chatbot-btn"
-                    onClick={() => setIsChatOpen(!isChatOpen)}
-                  >
-                    {isChatOpen ? 'Close AI Assistant' : 'Ask AI Assistant'} 
-                  </button>
+          <Routes>
+            <Route path="/space-monitor" element={<SpaceMonitor />} />
+            <Route path="/deep-space" element={<DeepSpace />} />
+            
+            <Route path="/tech-hub" element={<TechHub />} />
+            
+            {/* Protected Routes */}
+            <Route path="/interaction" element={
+              <ProtectedRoute>
+                <InteractionZone />
+              </ProtectedRoute>
+            } />
+            <Route path="/celestial-challenge" element={
+              <ProtectedRoute>
+                <CelestialChallenge />
+              </ProtectedRoute>
+            } />
+            <Route path="/webinars" element={
+              <ProtectedRoute>
+                <Webinars />
+              </ProtectedRoute>
+            } />
+            <Route path="/quiz-time" element={
+              <ProtectedRoute>
+                <QuizTime />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/tech-hub/:category" element={<CategoryPage />} />
+            <Route path="/games" element={<Games />} />
+            <Route path="/games/constellation-connect" element={<ConstellationConnect />} />
+            <Route path="/cosmic-architect" element={<CosmicArchitect />} />
+            <Route path="/games/asteroid-dodger" element={<AsteroidDodger />} />
+            <Route path="/games/time-traveler" element={<TimeTraveler />} />
+            <Route path="/" element={
+              <main className="hero-section">
+                <div className="hero-content">
+                  <div className="subtitle">Welcome to the future</div>
+                  <h1>Explore The Cosmos</h1>
+                  <p>Embark on an extraordinary journey through the infinite expanse of space. 
+                     Discover mysterious nebulae, traverse distant galaxies, and unlock the 
+                     secrets of the universe. Your cosmic adventure begins here.</p>
+                  <div className="hero-buttons">
+                    <button className="explore-btn">
+                      Begin Journey
+                    </button>
+                    <button 
+                      className="chatbot-btn"
+                      onClick={() => setIsChatOpen(!isChatOpen)}
+                    >
+                      {isChatOpen ? 'Close AI Assistant' : 'Ask AI Assistant'} 
+                    </button>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="canvas-container">
-                <Canvas camera={{ position: [0, 0, 12], fov: 50 }}>
-                  <Suspense fallback={null}>
-                    <ambientLight intensity={1.5} />
-                    <pointLight position={[10, 10, 10]} intensity={2.5} />
-                    <spotLight
-                      position={[0, 5, 8]}
-                      angle={0.6}
-                      penumbra={0.8}
-                      intensity={2}
-                      castShadow
-                    />
-                    <Stars 
-                      radius={300} 
-                      depth={50} 
-                      count={4000}
-                      factor={4} 
-                      saturation={0.5} 
-                      fade 
-                      speed={1}
-                    />
-                    <AstronautModel />
-                    <OrbitControls 
-                      enableZoom={false} 
-                      autoRotate={false}
-                      enablePan={false}
-                      maxPolarAngle={Math.PI * 0.6}
-                      minPolarAngle={Math.PI * 0.4}
-                      enableRotate={false}
-                    />
-                  </Suspense>
-                </Canvas>
-              </div>
-            </main>
-          } />
-        </Routes>
+                
+                <div className="canvas-container">
+                  <Canvas camera={{ position: [0, 0, 12], fov: 50 }}>
+                    <Suspense fallback={null}>
+                      <ambientLight intensity={1.5} />
+                      <pointLight position={[10, 10, 10]} intensity={2.5} />
+                      <spotLight
+                        position={[0, 5, 8]}
+                        angle={0.6}
+                        penumbra={0.8}
+                        intensity={2}
+                        castShadow
+                      />
+                      <Stars 
+                        radius={300} 
+                        depth={50} 
+                        count={4000}
+                        factor={4} 
+                        saturation={0.5} 
+                        fade 
+                        speed={1}
+                      />
+                      <AstronautModel />
+                      <OrbitControls 
+                        enableZoom={false} 
+                        autoRotate={false}
+                        enablePan={false}
+                        maxPolarAngle={Math.PI * 0.6}
+                        minPolarAngle={Math.PI * 0.4}
+                        enableRotate={false}
+                      />
+                    </Suspense>
+                  </Canvas>
+                </div>
+              </main>
+            } />
+          </Routes>
 
-        {/* ChatBot Components */}
-        <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-      </div>
-    </Router>
+          {/* ChatBot Components */}
+          <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
