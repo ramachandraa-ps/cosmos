@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
@@ -80,72 +81,166 @@ const RegisterButton = styled(motion.button)`
   }
 `;
 
-const Webinars = () => {
-  const webinarsList = [
-    {
-      id: 1,
-      title: "Exploring Mars: Latest Discoveries",
-      speaker: "Dr. Sarah Johnson",
-      date: "February 15, 2025",
-      time: "10:00 AM EST",
-      duration: "90 minutes",
-      description: "Join us for an exciting discussion about recent Mars discoveries and future exploration plans."
-    },
-    {
-      id: 2,
-      title: "Black Holes: Understanding the Unknown",
-      speaker: "Prof. Michael Chen",
-      date: "February 20, 2025",
-      time: "2:00 PM EST",
-      duration: "60 minutes",
-      description: "Dive deep into the mysteries of black holes and their role in shaping our universe."
-    },
-    {
-      id: 3,
-      title: "Space Tourism: The Future is Now",
-      speaker: "Emma Rodriguez",
-      date: "March 1, 2025",
-      time: "11:00 AM EST",
-      duration: "75 minutes",
-      description: "Explore the emerging industry of space tourism and its potential impact on future space travel."
-    }
-  ];
+const NoWebinarsContainer = styled.div`
+  text-align: center;
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+`;
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+const NoWebinarsTitle = styled.h2`
+  color: #00ffff;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  font-family: 'Inter', sans-serif;
+`;
+
+const NoWebinarsText = styled.p`
+  color: #ffffff;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+`;
+
+const BottomSection = styled.div`
+  text-align: center;
+  margin: 3rem auto;
+  padding: 2rem;
+  max-width: 600px;
+`;
+
+const BottomText = styled.p`
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+`;
+
+const HostButton = styled(motion.button)`
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const Requirements = styled.div`
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+const Webinars = () => {
+  const [webinars, setWebinars] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch webinars from localStorage
+    const storedWebinars = JSON.parse(localStorage.getItem('webinars') || '[]');
+    setWebinars(storedWebinars);
+  }, []);
+
+  const handleHostWebinar = () => {
+    navigate('/host-webinar');
+  };
+
+  const handleRegister = (registrationLink) => {
+    window.open(registrationLink, '_blank');
   };
 
   return (
     <WebinarsContainer>
-      <Title>Upcoming Space Webinars</Title>
-      <WebinarGrid>
-        {webinarsList.map((webinar, index) => (
-          <WebinarCard
-            key={webinar.id}
-            as={motion.div}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.5, delay: index * 0.2 }}
+      <Title>Webinars</Title>
+      
+      {webinars.length === 0 ? (
+        <NoWebinarsContainer>
+          <NoWebinarsTitle>No Webinars Available</NoWebinarsTitle>
+          <NoWebinarsText>
+            Share your cosmic knowledge and inspire fellow space enthusiasts! 
+            Host a webinar to explain your innovations, discoveries, and insights 
+            to our community of eager learners.
+          </NoWebinarsText>
+          <HostButton
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={handleHostWebinar}
           >
-            <WebinarTitle>{webinar.title}</WebinarTitle>
-            <WebinarInfo>Speaker: {webinar.speaker}</WebinarInfo>
-            <WebinarInfo>Duration: {webinar.duration}</WebinarInfo>
-            <WebinarInfo>{webinar.description}</WebinarInfo>
-            <WebinarDate>{webinar.date} at {webinar.time}</WebinarDate>
-            <RegisterButton
-              as={motion.button}
+            Host a Webinar
+          </HostButton>
+        </NoWebinarsContainer>
+      ) : (
+        <>
+          <WebinarGrid>
+            {webinars.map(webinar => (
+              <WebinarCard
+                key={webinar.id}
+                as={motion.div}
+                whileHover={{ scale: 1.02 }}
+              >
+                <WebinarTitle>{webinar.title}</WebinarTitle>
+                <WebinarInfo>Host: {webinar.hostName}</WebinarInfo>
+                <WebinarInfo>Duration: {webinar.duration} minutes</WebinarInfo>
+                <WebinarInfo>{webinar.description}</WebinarInfo>
+                <WebinarDate>{webinar.date} at {webinar.time}</WebinarDate>
+                
+                {webinar.requirements && (
+                  <Requirements>
+                    <WebinarInfo style={{ color: '#00ffff' }}>Requirements:</WebinarInfo>
+                    <WebinarInfo>{webinar.requirements}</WebinarInfo>
+                  </Requirements>
+                )}
+                
+                {webinar.maxParticipants && (
+                  <WebinarInfo>
+                    Maximum Participants: {webinar.maxParticipants}
+                  </WebinarInfo>
+                )}
+                
+                <RegisterButton
+                  as={motion.button}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleRegister(webinar.registrationLink)}
+                >
+                  Register Now
+                </RegisterButton>
+              </WebinarCard>
+            ))}
+          </WebinarGrid>
+
+          <BottomSection>
+            <BottomText>
+              Have knowledge to share? Host your own webinar and join our community of space educators!
+            </BottomText>
+            <HostButton
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={handleHostWebinar}
             >
-              Register Now
-            </RegisterButton>
-          </WebinarCard>
-        ))}
-      </WebinarGrid>
+              Host a Webinar
+            </HostButton>
+          </BottomSection>
+        </>
+      )}
     </WebinarsContainer>
   );
 };
