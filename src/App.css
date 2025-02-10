@@ -53,13 +53,23 @@ body {
   transition: all 0.3s ease;
   position: relative;
   padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .nav-link:hover {
-  background: linear-gradient(45deg, #00ffff, #ff00ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #00ffff;
   transform: translateY(-2px);
+}
+
+.nav-link svg {
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover svg {
+  transform: scale(1.1);
+  color: #00ffff;
 }
 
 .nav-link::after {

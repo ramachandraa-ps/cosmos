@@ -2,6 +2,7 @@ import React, { Suspense, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars, OrbitControls, useGLTF } from "@react-three/drei";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
+import { FaShoppingCart } from 'react-icons/fa';
 import "./App.css";
 import "./firebase"; // Import Firebase initialization
 import ChatBot from './components/ChatBot';
@@ -29,6 +30,7 @@ import LoginPopup from './components/LoginPopup';
 import SpaceZone from './components/SpaceZone';
 import StudyArea from './components/StudyArea';
 import GamingArena from './components/GamingArena';
+import SpaceStore from './components/SpaceStore';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -110,9 +112,13 @@ function App() {
             <div className="nav-links">
               <Link to="/" className="nav-link">Home</Link>
               <Link to="/space-zone" className="nav-link">Space Zone</Link>
-              <Link to="/community" className="nav-link">Community</Link>
               <Link to="/interaction" className="nav-link">Interaction Zone</Link>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Link to="/community" className="nav-link">Community</Link>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <Link to="/store" className="nav-link" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <FaShoppingCart size={20} />
+                  <span>Store</span>
+                </Link>
                 <ProfileAvatar />
                 <NotificationBell 
                   hasNotifications={!loading && events.length > 0} 
@@ -164,6 +170,7 @@ function App() {
             <Route path="/games/time-traveler" element={<TimeTraveler />} />
             <Route path="/space-lessons" element={<SpaceLessons />} />
             <Route path="/host-webinar" element={<HostWebinar />} />
+            <Route path="/store" element={<SpaceStore />} />
 
             <Route path="/" element={
               <main className="hero-section">
