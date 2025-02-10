@@ -31,12 +31,12 @@ const StudyArea = () => {
   ];
 
   return (
-    <div className="interaction-zone">
-      <div className="interaction-zone-header">
+    <div className="study-area">
+      <div className="study-area-header">
         <h1>Study Area</h1>
         <p>
-          Embark on an educational journey through space with our comprehensive learning resources.
-          From interactive lessons to live webinars, expand your cosmic knowledge.
+          Embark on an educational journey through space. Choose from our diverse learning resources
+          designed to expand your cosmic knowledge.
         </p>
       </div>
       

@@ -31,12 +31,12 @@ const GamingArena = () => {
   ];
 
   return (
-    <div className="interaction-zone">
-      <div className="interaction-zone-header">
+    <div className="gaming-arena">
+      <div className="gaming-arena-header">
         <h1>Gaming Arena</h1>
         <p>
-          Challenge yourself with our collection of space-themed games.
-          Learn while you play and compete with other space enthusiasts.
+          Challenge yourself with our collection of space-themed games. Learn while you play
+          through engaging cosmic adventures.
         </p>
       </div>
       

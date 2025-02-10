@@ -1,78 +1,137 @@
 .community-hub {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  min-height: calc(100vh - 80px);
-  background: rgba(13, 17, 23, 0.95);
+  padding: 100px 3rem 3rem;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
+  position: relative;
+  overflow: hidden;
+}
+
+.community-hub::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .community-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin: 3rem auto 4rem;
   color: #fff;
+  max-width: 800px;
+  position: relative;
+  z-index: 1;
 }
 
 .community-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .community-header p {
-  color: #a8b2d1;
-  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  line-height: 1.6;
 }
 
 .post-form {
-  margin-bottom: 2rem;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 3rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  padding: 2rem;
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
 }
 
 .post-input {
   width: 100%;
-  min-height: 100px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  min-height: 120px;
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.1rem;
   resize: vertical;
+  transition: all 0.3s ease;
+}
+
+.post-input:focus {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  outline: none;
 }
 
 .post-button {
-  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
   color: white;
   border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 6px;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
   cursor: pointer;
-  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   font-weight: 600;
-  transition: transform 0.2s;
 }
 
 .post-button:hover {
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .posts-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .post-card {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  padding: 2rem;
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.45),
+    inset 0 0 30px rgba(255, 255, 255, 0.07);
 }
 
 .post-header {
@@ -85,7 +144,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -105,7 +164,7 @@
 }
 
 .post-time {
-  color: #a8b2d1;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.9rem;
 }
 
@@ -159,8 +218,34 @@
   padding: 2rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  color: #a8b2d1;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .community-hub {
+    padding: 90px 1.5rem 1.5rem;
+  }
+
+  .community-header {
+    margin: 2rem auto 3rem;
+  }
+
+  .community-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .community-header p {
+    font-size: 1.1rem;
+  }
+
+  .post-form {
+    padding: 1.5rem;
+  }
+
+  .post-card {
+    padding: 1.5rem;
+  }
 }
 
 @keyframes spin {

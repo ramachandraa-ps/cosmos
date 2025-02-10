@@ -113,7 +113,7 @@ function App() {
               <Link to="/" className="nav-link">Home</Link>
               <Link to="/space-zone" className="nav-link">Space Zone</Link>
               <Link to="/interaction" className="nav-link">Interaction Zone</Link>
-              <Link to="/community" className="nav-link">Community</Link>
+              <Link to="/community" className="nav-link">Community Hub</Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <Link to="/store" className="nav-link" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <FaShoppingCart size={20} />
