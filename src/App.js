@@ -22,9 +22,9 @@ import AsteroidDodger from './components/games/AsteroidDodger';
 import TimeTraveler from './components/games/TimeTraveler';
 import ProfileAvatar from './components/ProfileAvatar';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import LoginPrompt from './components/LoginPrompt';
 import SpaceLessons from './components/SpaceLessons';
 import CommunityHub from './components/CommunityHub';
+import HostWebinar from './components/HostWebinar';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -143,6 +143,8 @@ function App() {
             <Route path="/games/asteroid-dodger" element={<AsteroidDodger />} />
             <Route path="/games/time-traveler" element={<TimeTraveler />} />
             <Route path="/space-lessons" element={<SpaceLessons />} />
+            <Route path="/host-webinar" element={<HostWebinar />} />
+
             <Route path="/" element={
               <main className="hero-section">
                 <div className="hero-content">
