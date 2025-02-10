@@ -26,6 +26,9 @@ import SpaceLessons from './components/SpaceLessons';
 import CommunityHub from './components/CommunityHub';
 import HostWebinar from './components/HostWebinar';
 import LoginPopup from './components/LoginPopup';
+import SpaceZone from './components/SpaceZone';
+import StudyArea from './components/StudyArea';
+import GamingArena from './components/GamingArena';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -106,11 +109,9 @@ function App() {
             <div className="nav-logo">COSMOS</div>
             <div className="nav-links">
               <Link to="/" className="nav-link">Home</Link>
-              <Link to="/space-monitor" className="nav-link">Space Monitor</Link>
-              <Link to="/deep-space" className="nav-link">Deep Space</Link>
+              <Link to="/space-zone" className="nav-link">Space Zone</Link>
               <Link to="/community" className="nav-link">Community</Link>
               <Link to="/interaction" className="nav-link">Interaction Zone</Link>
-              <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <ProfileAvatar />
                 <NotificationBell 
@@ -122,9 +123,9 @@ function App() {
           </nav>
 
           <Routes>
+            <Route path="/space-zone" element={<SpaceZone />} />
             <Route path="/space-monitor" element={<SpaceMonitor />} />
             <Route path="/deep-space" element={<DeepSpace />} />
-            
             <Route path="/tech-hub" element={<TechHub />} />
             
             {/* Protected Routes */}
@@ -133,6 +134,8 @@ function App() {
                 <InteractionZone />
               </ProtectedRoute>
             } />
+            <Route path="/interaction/study-area" element={<StudyArea />} />
+            <Route path="/interaction/gaming-arena" element={<GamingArena />} />
             <Route path="/celestial-challenge" element={
               <ProtectedRoute>
                 <CelestialChallenge />

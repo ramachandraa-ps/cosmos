@@ -1,153 +1,55 @@
 import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-
-const InteractionContainer = styled.div`
-  background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
-  min-height: 100vh;
-  color: #ffffff;
-  padding: 6rem 2rem 2rem 2rem;
-`;
-
-const Title = styled.h1`
-  font-size: 2.8rem;
-  text-align: center;
-  margin-bottom: 1rem;
-  background: linear-gradient(45deg, #00ffff, #ff00ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-`;
-
-const Subtitle = styled.p`
-  text-align: center;
-  color: #ffffff;
-  font-size: 1.1rem;
-  margin-bottom: 3rem;
-  opacity: 0.8;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const CardsContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-  margin-top: 2rem;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const Card = styled.div`
-  width: 300px;
-  height: 400px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.05)
-  );
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-
-  &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-  }
-`;
-
-const CardImage = styled.img`
-  width: 100%;
-  height: 70%;
-  object-fit: cover;
-`;
-
-const CardTitle = styled.h3`
-  color: white;
-  text-align: center;
-  margin: 1rem 0;
-  font-size: 1.5rem;
-  text-transform: uppercase;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 1px;
-`;
-
-const CardDescription = styled.p`
-  color: #ddd;
-  text-align: center;
-  padding: 0 1rem;
-  font-size: 0.9rem;
-  font-family: 'Inter', sans-serif;
-  opacity: 0.9;
-`;
+import { Link } from 'react-router-dom';
+import './InteractionZone.css';
 
 const InteractionZone = () => {
-  const navigate = useNavigate();
-
-  const features = [
+  const sections = [
     {
-      title: 'Cosmic Architect',
-      image: '/interaction/cosmic_architect.jpeg',
-      description: 'Design and simulate your own space ecosystems',
-      path: '/cosmic-architect'
+      title: 'Study Area',
+      description: 'Dive into interactive learning experiences and expand your cosmic knowledge through engaging educational content.',
+      image: '/card_images/study-area.jpg',
+      path: '/interaction/study-area'
     },
     {
-      title: 'Celestial Challenge',
-      image: '/interaction/celestial_challenge.jpg',
-      description: 'Arrange the planets in correct order',
-      path: '/celestial-challenge'
-    },
-    {
-      title: 'Games',
-      image: '/interaction/Game.jpg',
-      description: 'Play educational space games and learn about constellations',
-      path: '/games'
-    },
-    {
-      title: 'Space Lessons',
-      image: '/interaction/SL.jpg',
-      description: 'Access free and premium space science courses',
-      path: '/space-lessons'
-    },
-    {
-      title: 'Webinars',
-      image: '/interaction/Webinar.jpg',
-      description: 'Join interactive space science webinars',
-      path: '/webinars'
-    },
-    {
-      title: 'QUIZ TIME',
-      image: '/interaction/QuizTime.jpg',
-      description: 'Test your cosmic knowledge',
-      path: '/quiz-time'
+      title: 'Gaming Arena',
+      description: 'Challenge yourself with our collection of space-themed games designed to entertain and educate.',
+      image: '/card_images/gaming-arena.jpg',
+      path: '/interaction/gaming-arena'
     }
   ];
 
   return (
-    <InteractionContainer>
-      <Title>Space Interaction Zone</Title>
-      <Subtitle>
-        Engage with interactive features and challenges to enhance your cosmic knowledge
-      </Subtitle>
-      <CardsContainer>
-        {features.map((feature) => (
-          <Card key={feature.title} onClick={() => navigate(feature.path)}>
-            <CardImage src={feature.image} alt={feature.title} />
-            <CardTitle>{feature.title}</CardTitle>
-            <CardDescription>{feature.description}</CardDescription>
-          </Card>
+    <div className="interaction-zone">
+      <div className="interaction-zone-header">
+        <h1>Interactive Learning Hub</h1>
+        <p>
+          Embark on an educational journey through space. Choose between focused study materials
+          and engaging games designed to make learning an adventure.
+        </p>
+      </div>
+      
+      <div className="interaction-cards-container">
+        {sections.map((section, index) => (
+          <Link 
+            to={section.path}
+            key={index} 
+            className="interaction-card"
+            style={{
+              animationDelay: `${index * 0.2}s`
+            }}
+          >
+            <div className="interaction-card-image">
+              <img src={section.image} alt={section.title} />
+            </div>
+            <div className="interaction-card-content">
+              <h2>{section.title}</h2>
+              <p>{section.description}</p>
+              <div className="interaction-card-arrow">→</div>
+            </div>
+          </Link>
         ))}
-      </CardsContainer>
-    </InteractionContainer>
+      </div>
+    </div>
   );
 };
 

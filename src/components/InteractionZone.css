@@ -1,0 +1,291 @@
+.interaction-zone {
+  background: linear-gradient(to bottom, #0B0B2B, #1B1B4B);
+  min-height: 100vh;
+  color: #ffffff;
+  padding: 6rem 2rem 2rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.interaction-zone-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.interaction-zone-header h1 {
+  font-size: 3rem;
+  text-align: center;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.interaction-zone-header p {
+  text-align: center;
+  color: #ffffff;
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.9;
+}
+
+.interaction-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  padding: 0 1rem;
+}
+
+.interaction-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border-radius: 24px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 30px rgba(255, 255, 255, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: cardFadeIn 0.5s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.interaction-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.45),
+    inset 0 0 30px rgba(255, 255, 255, 0.07);
+}
+
+.interaction-card-image {
+  width: 100%;
+  height: 240px;
+  position: relative;
+  overflow: hidden;
+}
+
+.interaction-card-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to bottom, transparent, rgba(11, 11, 43, 0.8));
+  pointer-events: none;
+}
+
+.interaction-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interaction-card:hover .interaction-card-image img {
+  transform: scale(1.1);
+}
+
+.interaction-card-content {
+  padding: 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 2;
+}
+
+.interaction-card-content h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 0.8rem;
+}
+
+.interaction-card-content h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  opacity: 0.7;
+  transition: width 0.3s ease;
+}
+
+.interaction-card:hover .interaction-card-content h2::after {
+  width: 100px;
+}
+
+.interaction-card-content p {
+  color: #8892b0;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  flex: 1;
+}
+
+.interaction-card-arrow {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 1.8rem;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  z-index: 2;
+  color: #64ffda;
+}
+
+.interaction-card:hover .interaction-card-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Sub cards styling */
+.interaction-subcards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.interaction-subcard {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.interaction-subcard:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.interaction-subcard h3 {
+  font-size: 1.3rem;
+  color: #64ffda;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.interaction-subcard h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: #64ffda;
+  opacity: 0.5;
+  transition: width 0.3s ease;
+}
+
+.interaction-subcard:hover h3::after {
+  width: 60px;
+}
+
+.interaction-subcard p {
+  color: #8892b0;
+  font-size: 0.95rem;
+  margin: 0;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .interaction-zone {
+    padding: 4rem 1rem 2rem;
+  }
+  
+  .interaction-zone-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .interaction-zone-header p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  
+  .interaction-zone-header {
+    margin-bottom: 2rem;
+  }
+  
+  .interaction-cards-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .interaction-card-image {
+    height: 200px;
+  }
+  
+  .interaction-card-content {
+    padding: 1.5rem;
+  }
+  
+  .interaction-card-content h2 {
+    font-size: 1.6rem;
+  }
+
+  .interaction-subcards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .interaction-subcard {
+    padding: 1.2rem;
+  }
+  
+  .interaction-subcard h3 {
+    font-size: 1.2rem;
+  }
+}
+
+@keyframes cardFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
