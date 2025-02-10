@@ -77,7 +77,7 @@ export const SignupForm = ({ onClose, onSwitchToLogin }) => {
 };
 
 export const LoginForm = ({ onClose, onSwitchToSignup }) => {
-  const { login } = useAuth();
+  const { login, signInWithGoogle } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -89,6 +89,16 @@ export const LoginForm = ({ onClose, onSwitchToSignup }) => {
     try {
       setError('');
       await login(formData.email, formData.password);
+      if (onClose) onClose();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setError('');
+      await signInWithGoogle();
       if (onClose) onClose();
     } catch (err) {
       setError(err.message);
@@ -120,6 +130,29 @@ export const LoginForm = ({ onClose, onSwitchToSignup }) => {
         />
       </div>
       <button type="submit" className="submit-button">Login</button>
+      
+      <div className="auth-divider">
+        <span>OR</span>
+      </div>
+
+      <button 
+        type="button" 
+        onClick={handleGoogleSignIn} 
+        className="submit-button"
+      >
+        <img 
+          src="/google-icon.png" 
+          alt="Google" 
+          style={{ 
+            width: '20px', 
+            height: '20px', 
+            marginRight: '10px',
+            verticalAlign: 'middle'
+          }} 
+        />
+        Sign in with Google
+      </button>
+
       {onSwitchToSignup && (
         <p className="switch-auth">
           Don't have an account? <button type="button" onClick={onSwitchToSignup}>Sign up</button>

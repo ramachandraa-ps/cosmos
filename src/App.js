@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars, OrbitControls, useGLTF } from "@react-three/drei";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 import "./App.css";
+import "./firebase"; // Import Firebase initialization
 import ChatBot from './components/ChatBot';
 import SpaceMonitor from './components/SpaceMonitor';
 import DeepSpace from './components/DeepSpace';

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { authService } from '../services/authService';
 
 const AuthContext = createContext(null);
@@ -8,16 +9,30 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check if user is logged in on mount
-        const currentUser = authService.getCurrentUser();
-        setUser(currentUser);
-        setLoading(false);
+        const auth = getAuth();
+        // Subscribe to auth state changes
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            if (firebaseUser) {
+                setUser({
+                    id: firebaseUser.uid,
+                    name: firebaseUser.displayName,
+                    email: firebaseUser.email,
+                    phone: firebaseUser.phoneNumber,
+                    createdAt: firebaseUser.metadata.creationTime
+                });
+            } else {
+                setUser(null);
+            }
+            setLoading(false);
+        });
+
+        // Cleanup subscription
+        return () => unsubscribe();
     }, []);
 
     const signup = async (userData) => {
         try {
             const newUser = await authService.signup(userData);
-            setUser(newUser);
             return newUser;
         } catch (error) {
             throw error;
@@ -27,16 +42,27 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const loggedInUser = await authService.login(email, password);
-            setUser(loggedInUser);
             return loggedInUser;
         } catch (error) {
             throw error;
         }
     };
 
-    const logout = () => {
-        authService.logout();
-        setUser(null);
+    const signInWithGoogle = async () => {
+        try {
+            const user = await authService.signInWithGoogle();
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const logout = async () => {
+        try {
+            await authService.logout();
+        } catch (error) {
+            throw error;
+        }
     };
 
     return (
@@ -45,10 +71,11 @@ export const AuthProvider = ({ children }) => {
             loading,
             signup,
             login,
+            signInWithGoogle,
             logout,
             isLoggedIn: !!user
         }}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
     );
 };

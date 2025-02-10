@@ -1,90 +1,98 @@
-// Utility function to hash passwords (basic security)
-const hashPassword = async (password) => {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hash = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hash))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-};
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    updateProfile,
+    GoogleAuthProvider,
+    signInWithPopup
+} from 'firebase/auth';
 
 export const authService = {
     // Register a new user
     async signup(userData) {
         try {
-            // Get existing users or initialize empty array
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            // Check if email already exists
-            if (users.some(user => user.email === userData.email)) {
-                throw new Error('Email already registered');
-            }
+            const auth = getAuth();
+            const { user } = await createUserWithEmailAndPassword(
+                auth,
+                userData.email,
+                userData.password
+            );
 
-            // Hash the password before storing
-            const hashedPassword = await hashPassword(userData.password);
-            
-            // Create new user object
-            const newUser = {
-                id: Date.now().toString(),
-                name: userData.name,
-                email: userData.email,
+            // Update user profile with additional info
+            await updateProfile(user, {
+                displayName: userData.name,
+                phoneNumber: userData.phone
+            });
+
+            return {
+                id: user.uid,
+                name: user.displayName,
+                email: user.email,
                 phone: userData.phone,
-                password: hashedPassword,
-                createdAt: new Date().toISOString()
+                createdAt: user.metadata.creationTime
             };
-
-            // Add to users array
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-
-            // Store current user session (without password)
-            const { password, ...userSession } = newUser;
-            localStorage.setItem('currentUser', JSON.stringify(userSession));
-
-            return userSession;
         } catch (error) {
-            throw error;
+            throw new Error(error.message);
         }
     },
 
-    // Login user
+    // Login user with email and password
     async login(email, password) {
         try {
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            const hashedPassword = await hashPassword(password);
-            
-            // Find user with matching email and password
-            const user = users.find(u => 
-                u.email === email && u.password === hashedPassword
-            );
+            const auth = getAuth();
+            const { user } = await signInWithEmailAndPassword(auth, email, password);
 
-            if (!user) {
-                throw new Error('Invalid email or password');
-            }
-
-            // Store current user session (without password)
-            const { password: _, ...userSession } = user;
-            localStorage.setItem('currentUser', JSON.stringify(userSession));
-
-            return userSession;
+            return {
+                id: user.uid,
+                name: user.displayName,
+                email: user.email,
+                phone: user.phoneNumber,
+                createdAt: user.metadata.creationTime
+            };
         } catch (error) {
-            throw error;
+            throw new Error(error.message);
+        }
+    },
+
+    // Sign in with Google
+    async signInWithGoogle() {
+        try {
+            const auth = getAuth();
+            const provider = new GoogleAuthProvider();
+            const { user } = await signInWithPopup(auth, provider);
+
+            return {
+                id: user.uid,
+                name: user.displayName,
+                email: user.email,
+                phone: user.phoneNumber,
+                createdAt: user.metadata.creationTime
+            };
+        } catch (error) {
+            throw new Error(error.message);
         }
     },
 
     // Logout user
-    logout() {
-        localStorage.removeItem('currentUser');
-    },
-
-    // Check if user is logged in
-    isLoggedIn() {
-        return !!localStorage.getItem('currentUser');
+    async logout() {
+        const auth = getAuth();
+        await signOut(auth);
     },
 
     // Get current user data
     getCurrentUser() {
-        const userStr = localStorage.getItem('currentUser');
-        return userStr ? JSON.parse(userStr) : null;
+        const auth = getAuth();
+        const user = auth.currentUser;
+        
+        if (!user) return null;
+
+        return {
+            id: user.uid,
+            name: user.displayName,
+            email: user.email,
+            phone: user.phoneNumber,
+            createdAt: user.metadata.creationTime
+        };
     }
 };
