@@ -1,96 +1,126 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { authService } from '../services/authService';
-import { createUserProfile } from '../services/firestoreService';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  signInWithPopup, 
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+export function useAuth() {
+  return useContext(AuthContext);
+}
 
-    useEffect(() => {
-        const auth = getAuth();
-        // Subscribe to auth state changes
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-            if (firebaseUser) {
-                const userData = {
-                    id: firebaseUser.uid,
-                    name: firebaseUser.displayName,
-                    email: firebaseUser.email,
-                    phone: firebaseUser.phoneNumber,
-                    createdAt: firebaseUser.metadata.creationTime
-                };
-                
-                // Create/update user profile in Firestore
-                await createUserProfile(userData);
-                setUser(userData);
-            } else {
-                setUser(null);
-            }
-            setLoading(false);
-        });
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const auth = getAuth();
 
-        // Cleanup subscription
-        return () => unsubscribe();
-    }, []);
+  // Create or update user profile in Firestore
+  const createUserProfile = async (user) => {
+    const userRef = doc(db, 'users', user.uid);
+    const userSnap = await getDoc(userRef);
 
-    const signup = async (userData) => {
-        try {
-            const newUser = await authService.signup(userData);
-            return newUser;
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    const login = async (email, password) => {
-        try {
-            const loggedInUser = await authService.login(email, password);
-            return loggedInUser;
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    const signInWithGoogle = async () => {
-        try {
-            const user = await authService.signInWithGoogle();
-            return user;
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    const logout = async () => {
-        try {
-            await authService.logout();
-            setUser(null);
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    const value = {
-        user,
-        loading,
-        signup,
-        login,
-        logout,
-        signInWithGoogle
-    };
-
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    );
-};
-
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        name: user.displayName || user.email.split('@')[0],
+        email: user.email,
+        photoURL: user.photoURL || null,
+        createdAt: new Date(),
+      });
     }
-    return context;
-};
+  };
+
+  // Sign in with Google
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      await createUserProfile(result.user);
+      return result.user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Sign up with email/password
+  const signUpWithEmail = async (email, password) => {
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await createUserProfile(result.user);
+      return result.user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Sign in with email/password
+  const signInWithEmail = async (email, password) => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      return result.user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Sign out
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          
+          if (userSnap.exists()) {
+            setUser({ id: user.uid, ...userSnap.data() });
+          } else {
+            await createUserProfile(user);
+            setUser({ 
+              id: user.uid, 
+              name: user.displayName || user.email.split('@')[0],
+              email: user.email,
+              photoURL: user.photoURL || null
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, [auth]);
+
+  const value = {
+    user,
+    loading,
+    signInWithGoogle,
+    signInWithEmail,
+    signUpWithEmail,
+    logout
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+}

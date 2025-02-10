@@ -25,18 +25,35 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import SpaceLessons from './components/SpaceLessons';
 import CommunityHub from './components/CommunityHub';
 import HostWebinar from './components/HostWebinar';
+import LoginPopup from './components/LoginPopup';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   if (loading) {
     return <div className="loading-spinner">Loading...</div>;
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return (
+      <>
+        {showLoginPopup && (
+          <LoginPopup 
+            onClose={() => {
+              setShowLoginPopup(false);
+              window.history.back();
+            }}
+            redirectPath={location.pathname}
+          />
+        )}
+        <div style={{ display: 'none' }}>
+          {setTimeout(() => setShowLoginPopup(true), 0)}
+        </div>
+      </>
+    );
   }
 
   return children;
