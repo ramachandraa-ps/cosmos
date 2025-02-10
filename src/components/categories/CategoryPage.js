@@ -166,57 +166,73 @@ const ResultsGrid = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   padding: 2rem;
-  min-height: 200px; /* Minimum height to prevent layout shifts */
+  max-width: 1400px;
+  margin: 0 auto;
 `;
 
 const ResultCard = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
   backdrop-filter: blur(10px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  height: 100%; /* Full height to prevent layout shifts */
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 174, 255, 0.2);
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
+  height: 100%;
   
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border-color: rgba(0, 174, 255, 0.4);
   }
 `;
 
 const Title = styled.h3`
-  color: white;
+  color: #00aeff;
   margin-bottom: 1rem;
   font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+  
+  &:before {
+    content: ${props => {
+      switch (props.category) {
+        case 'astronauts': return '"👨‍🚀 "';
+        case 'satellites': return '"🛰 "';
+        case 'rockets': return '"🚀 "';
+        default: return '""';
+      }
+    }};
+  }
 `;
 
 const Description = styled.p`
   color: #ddd;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1.6;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+  flex-grow: 1;
 `;
 
 const DateInfo = styled.div`
   color: #aaa;
-  font-size: 0.8rem;
-  margin-top: 1rem;
+  font-size: 0.85rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-`;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
-const LoadingSpinner = styled.div`
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(255, 255, 255, .3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s ease-in-out infinite;
-  margin: 2rem auto;
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
+  &:before {
+    content: '🗓';
+    font-size: 1rem;
   }
 `;
 
@@ -225,6 +241,25 @@ const Message = styled.div`
   padding: 2rem;
   color: ${props => props.error ? '#ff6b6b' : '#ddd'};
   font-size: 1.1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  margin: 2rem auto;
+  max-width: 600px;
+`;
+
+const LoadingSpinner = styled.div`
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, .3);
+  border-radius: 50%;
+  border-top-color: #00aeff;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 `;
 
 const CategoryTitle = styled.h1`
@@ -437,7 +472,7 @@ function CategoryPage() {
             ) : (
               results.map((result, index) => (
                 <ResultCard key={index}>
-                  <Title>{result.title}</Title>
+                  <Title category={category}>{result.title}</Title>
                   <Description>{result.description}</Description>
                   <DateInfo>{result.date}</DateInfo>
                 </ResultCard>
