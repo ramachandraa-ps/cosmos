@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { authService } from '../services/authService';
+import { createUserProfile } from '../services/firestoreService';
 
 const AuthContext = createContext(null);
 
@@ -11,15 +12,19 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const auth = getAuth();
         // Subscribe to auth state changes
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             if (firebaseUser) {
-                setUser({
+                const userData = {
                     id: firebaseUser.uid,
                     name: firebaseUser.displayName,
                     email: firebaseUser.email,
                     phone: firebaseUser.phoneNumber,
                     createdAt: firebaseUser.metadata.creationTime
-                });
+                };
+                
+                // Create/update user profile in Firestore
+                await createUserProfile(userData);
+                setUser(userData);
             } else {
                 setUser(null);
             }
@@ -60,22 +65,24 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             await authService.logout();
+            setUser(null);
         } catch (error) {
             throw error;
         }
     };
 
+    const value = {
+        user,
+        loading,
+        signup,
+        login,
+        logout,
+        signInWithGoogle
+    };
+
     return (
-        <AuthContext.Provider value={{
-            user,
-            loading,
-            signup,
-            login,
-            signInWithGoogle,
-            logout,
-            isLoggedIn: !!user
-        }}>
-            {!loading && children}
+        <AuthContext.Provider value={value}>
+            {children}
         </AuthContext.Provider>
     );
 };

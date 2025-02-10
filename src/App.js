@@ -24,13 +24,19 @@ import ProfileAvatar from './components/ProfileAvatar';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPrompt from './components/LoginPrompt';
 import SpaceLessons from './components/SpaceLessons';
+import CommunityHub from './components/CommunityHub';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { isLoggedIn } = useAuth();
+  const { user, loading } = useAuth();
+  const location = useLocation();
 
-  if (!isLoggedIn) {
-    return <LoginPrompt isProtectedRoute={true} />;
+  if (loading) {
+    return <div className="loading-spinner">Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;
@@ -85,6 +91,7 @@ function App() {
               <Link to="/" className="nav-link">Home</Link>
               <Link to="/space-monitor" className="nav-link">Space Monitor</Link>
               <Link to="/deep-space" className="nav-link">Deep Space</Link>
+              <Link to="/community" className="nav-link">Community</Link>
               <Link to="/interaction" className="nav-link">Interaction Zone</Link>
               <Link to="/tech-hub" className="nav-link">Tech Hub</Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -124,7 +131,11 @@ function App() {
                 <QuizTime />
               </ProtectedRoute>
             } />
-            
+            <Route path="/community" element={
+              <ProtectedRoute>
+                <CommunityHub />
+              </ProtectedRoute>
+            } />
             <Route path="/tech-hub/:category" element={<CategoryPage />} />
             <Route path="/games" element={<Games />} />
             <Route path="/games/constellation-connect" element={<ConstellationConnect />} />
