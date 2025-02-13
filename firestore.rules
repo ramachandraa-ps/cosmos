@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if true;  // Allow reading user profiles
+      allow create, update: if isOwner(userId);
+      allow delete: if false;  // Prevent user deletion
+    }
+
+    // Posts collection
+    match /posts/{postId} {
+      allow read: if true;  // Anyone can read posts
+      allow create: if isAuthenticated();  // Must be logged in to create
+      allow update, delete: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid);  // Only post owner can modify
+    }
+
+    // Messages collection
+    match /messages/{messageId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.senderId == request.auth.uid || 
+         resource.data.receiverId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update, delete: if false;  // Messages cannot be modified or deleted
+    }
+
+    // Forums collection
+    match /forums/{forumId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+    }
+  }
+}
