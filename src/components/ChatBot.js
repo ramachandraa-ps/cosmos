@@ -15,6 +15,31 @@ const ChatBot = ({ isOpen, onClose }) => {
     scrollToBottom();
   }, [messages]);
 
+  const isSpaceRelated = async (text) => {
+    try {
+      // First, check if the input is space-related using Gemini
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
+        {
+          contents: [{
+            parts: [{ text: `Is the following text related to space, astronomy, cosmos, planets, stars, galaxies, or any space-related topics? Reply with only 'yes' or 'no': "${text}"` }]
+          }]
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      
+      const answer = response.data.candidates[0].content.parts[0].text.toLowerCase().trim();
+      return answer === 'yes';
+    } catch (error) {
+      console.error('Error checking space relation:', error);
+      return false;
+    }
+  };
+
   const handleSend = async () => {
     if (!input.trim()) return;
     
@@ -24,6 +49,18 @@ const ChatBot = ({ isOpen, onClose }) => {
     setIsLoading(true);
 
     try {
+      // Check if the input is space-related
+      const spaceRelated = await isSpaceRelated(input);
+      
+      if (!spaceRelated) {
+        setMessages(prev => [...prev, { 
+          text: "I apologize, but I can only assist with space-related topics. Please ask me something about space, astronomy, planets, stars, or any cosmic phenomena!",
+          sender: 'bot'
+        }]);
+        setIsLoading(false);
+        return;
+      }
+
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
         {
