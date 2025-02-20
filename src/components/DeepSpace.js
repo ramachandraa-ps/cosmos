@@ -203,7 +203,7 @@ const DeepSpace = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://api.nasa.gov/EPIC/api/natural/date/${selectedDate}?api_key=DEMO_KEY`
+          `https://api.nasa.gov/EPIC/api/natural/date/${selectedDate}?api_key=${process.env.REACT_APP_NASA_API_KEY}`
         );
         const data = await response.json();
         console.log('Fetched EPIC data:', data);
@@ -237,7 +237,7 @@ const DeepSpace = () => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `https://api.nasa.gov/EPIC/archive/natural/${year}/${month}/${day}/png/${image.image}.png?api_key=DEMO_KEY`;
+    return `https://api.nasa.gov/EPIC/archive/natural/${year}/${month}/${day}/png/${image.image}.png?api_key=${process.env.REACT_APP_NASA_API_KEY}`;
   };
 
   return (

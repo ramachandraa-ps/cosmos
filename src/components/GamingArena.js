@@ -16,12 +16,12 @@ const GamingArena = () => {
       image: '/interaction/asteroid_dodge.jpg',
       path: '/games/asteroid-dodger'
     },
-    {
-      title: 'Time Traveller',
-      description: 'Journey through different space eras in this educational game. Experience the evolution of our understanding of space.',
-      image: '/interaction/time-traveler.jpg',
-      path: '/games/time-traveler'
-    },
+    // {
+    //   title: 'Time Traveller',
+    //   description: 'Journey through different space eras in this educational game. Experience the evolution of our understanding of space.',
+    //   image: '/interaction/time-traveler.jpg',
+    //   path: '/games/time-traveler'
+    // },
     {
       title: 'Celestial Challenge',
       description: 'Compete in various space-themed mini-games and puzzles. Put your cosmic knowledge to the test.',

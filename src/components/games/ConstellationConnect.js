@@ -231,6 +231,7 @@ const ConstellationConnect = () => {
   const [selectedStar, setSelectedStar] = useState(null);
   const [showHint, setShowHint] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [wrongAttempts, setWrongAttempts] = useState(0);
   const canvasRef = useRef(null);
 
   const currentConstellation = constellationData.find(c => c.level === currentLevel);
@@ -351,6 +352,9 @@ const ConstellationConnect = () => {
             (start === connection[1] && end === connection[0])
         )) {
           setUserConnections([...userConnections, connection]);
+        } else if (!isValidConnection) {
+          // Increment wrong attempts when an invalid connection is made
+          setWrongAttempts(prev => prev + 1);
         }
         setSelectedStar(null);
       }
@@ -372,6 +376,7 @@ const ConstellationConnect = () => {
         if (currentLevel < constellationData.length) {
           setCurrentLevel(currentLevel + 1);
           setUserConnections([]);
+          setWrongAttempts(0); // Reset wrong attempts for new level
         }
       }, 3000);
     } else {
@@ -382,6 +387,7 @@ const ConstellationConnect = () => {
   const resetLevel = () => {
     setUserConnections([]);
     setSelectedStar(null);
+    setWrongAttempts(0); // Reset wrong attempts when level is reset
   };
 
   const createConfetti = () => {
@@ -443,9 +449,23 @@ const ConstellationConnect = () => {
         <InfoPanel>
           <h3>The Story</h3>
           <StoryText>{currentConstellation.story}</StoryText>
-          <Button onClick={() => setShowHint(!showHint)}>
-            {showHint ? 'Hide Guide Lines' : 'Show Guide Lines'}
+          <Button 
+            onClick={() => setShowHint(!showHint)}
+            disabled={wrongAttempts < 3}
+            style={{ 
+              opacity: wrongAttempts < 3 ? 0.5 : 1,
+              cursor: wrongAttempts < 3 ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {showHint ? 'Hide' : 'Show'} Guidelines
           </Button>
+          {wrongAttempts >= 3 && showHint && (
+            <Hint>
+              {currentConstellation.connectionSteps.map((step, index) => (
+                <p key={index}>{index + 1}. {step}</p>
+              ))}
+            </Hint>
+          )}
           <Button onClick={resetLevel}>Reset Level</Button>
         </InfoPanel>
       </GameUI>

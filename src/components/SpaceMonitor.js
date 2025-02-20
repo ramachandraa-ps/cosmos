@@ -209,7 +209,7 @@ const SpaceMonitor = () => {
     const fetchAsteroids = async () => {
       try {
         const response = await fetch(
-          `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=DEMO_KEY`
+          `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${process.env.REACT_APP_NASA_API_KEY}`
         );
         const data = await response.json();
         const allAsteroids = Object.values(data.near_earth_objects).flat();
